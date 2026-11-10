@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "mathematikz", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev", "--", "--port", "5175"], "port": 5175 }
+  ]
+}
