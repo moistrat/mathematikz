@@ -5,6 +5,24 @@ import { buildRound, RoundItem, scopeById, unitScopeId } from '../math/practice'
 import { checkAnswer, generateQuestion, LEVELS, Question } from '../math/questions'
 import { load, save } from '../state/storage'
 
+/** Press Enter to continue once a question has been answered (the answer box is disabled by then, so nothing else has focus). */
+function useEnterToContinue(active: boolean, next: () => void) {
+  const ref = useRef(next)
+  ref.current = next
+  useEffect(() => {
+    if (!active) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Enter' || e.repeat || e.defaultPrevented) return
+      // A focused button or link already handles Enter itself; don't advance twice.
+      if ((e.target as HTMLElement | null)?.closest('button, a, select, textarea')) return
+      e.preventDefault()
+      ref.current()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [active])
+}
+
 /* ------------------------------------------------------------------ the answer box */
 
 const KEY_LABELS: [string, string, (q: Question) => boolean][] = [
@@ -30,6 +48,14 @@ function Ask({ q, mode, onResult, onNext, nextLabel }: {
   useEffect(() => { setText(''); setState('ask'); setTries(0); setNote(''); setHint(false); input.current?.focus() }, [q.id])
 
   const done = state === 'right' || state === 'revealed' || (mode === 'round' && state === 'wrong')
+  useEnterToContinue(done, onNext)
+  // Focus the box once it is enabled again (a disabled input cannot take focus), so the next answer can be typed straight away.
+  useEffect(() => {
+    if (done) return
+    // Deferred a tick, so the Enter keypress that advanced cannot also land in the fresh input and submit it.
+    const f = setTimeout(() => input.current?.focus(), 0)
+    return () => clearTimeout(f)
+  }, [done, q.id])
   const insert = (s: string) => {
     const el = input.current
     const a = el?.selectionStart ?? text.length, b = el?.selectionEnd ?? text.length
@@ -170,6 +196,7 @@ function Round({ scopeId }: { scopeId: string }) {
 
   const item = items[idx]
   const done = idx >= items.length
+  useEnterToContinue(!done && item.kind === 'mc' && !!fb, () => setIdx((i) => i + 1))
   useEffect(() => { setPick(null); setFb(null) }, [idx, items])
   useEffect(() => { setItems(buildRound(scope.lessons, SIZE)); setIdx(0); setAnswers([]); setBest(load(key(scope.id), { best: 0, rounds: 0 })) }, [scopeId]) // eslint-disable-line react-hooks/exhaustive-deps
 
