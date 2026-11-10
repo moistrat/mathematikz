@@ -166,6 +166,8 @@ export function solveSpecial(fn: Fn, v: Surd, lo = 0, hi = 360): number[] {
 /* --------------------------------------------------------- inverse (principal values) */
 
 export type InvFn = 'arcsin' | 'arccos' | 'arctan'
+/** How an inverse function is written on screen: sin⁻¹, cos⁻¹, tan⁻¹. */
+export const invLabel = (inv: InvFn): string => `${inv.slice(3)}⁻¹`
 export const INV_RANGE: Record<InvFn, { lo: number; hi: number; open: boolean; text: string; textDeg: string; fn: Fn }> = {
   arcsin: { lo: -90, hi: 90, open: false, text: `[${MINUS}π/2, π/2]`, textDeg: `[${MINUS}90°, 90°]`, fn: 'sin' },
   arccos: { lo: 0, hi: 180, open: false, text: '[0, π]', textDeg: '[0°, 180°]', fn: 'cos' },

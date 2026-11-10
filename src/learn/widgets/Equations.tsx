@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  degToRad, evalNumeric, Fn, FNS, fmtDeg, fmtPi, fmtSurd, INV_RANGE, InvFn, inverseExact, norm360, solveSpecial,
+  degToRad, evalNumeric, Fn, FNS, fmtDeg, fmtPi, fmtSurd, INV_RANGE, InvFn, invLabel, inverseExact, norm360, solveSpecial,
   specialValues, Surd, surdValue,
 } from '../../math/exact'
 import { formA, U } from '../../math/questions'
@@ -105,7 +105,7 @@ export function Inverse() {
     <Frame caption="The shaded half of the circle is the range each inverse function is allowed to answer from. Other angles with the same value exist, but they lie outside it.">
       <div className="lab-main">
         <div className="lab-canvas">
-          <svg viewBox="0 0 360 300" className="wsvg" role="img" aria-label={`${inv} of ${fmtSurd(v)}`}>
+          <svg viewBox="0 0 360 300" className="wsvg" role="img" aria-label={`${invLabel(inv)} of ${fmtSurd(v)}`}>
             <line x1={10} x2={350} y1={cy} y2={cy} className="w-axis" />
             <line x1={cx} x2={cx} y1={10} y2={290} className="w-axis" />
             <circle cx={cx} cy={cy} r={r} className="w-circle" />
@@ -126,7 +126,7 @@ export function Inverse() {
           </svg>
         </div>
         <div className="lab-controls">
-          <Seg label="Function" value={inv} options={INVS.map((f) => ({ id: f, label: f }))} onChange={(f) => { setInv(f); setKey(INV_DEFAULT[f]) }} />
+          <Seg label="Function" value={inv} options={INVS.map((f) => ({ id: f, label: invLabel(f) }))} onChange={(f) => { setInv(f); setKey(INV_DEFAULT[f]) }} />
           <Seg label="Units" value={u} options={[{ id: 'rad', label: 'radians' }, { id: 'deg', label: 'degrees' }]} onChange={setU} />
           <label className="field">Input value
             <select value={fmtSurd(v)} onChange={(e) => setKey(e.target.value)}>
@@ -134,7 +134,7 @@ export function Inverse() {
             </select>
           </label>
           <Readouts items={[
-            [`${inv}(${fmtSurd(v)})`, label(ans), u === 'rad' ? fmtDeg(ans) : `${fmtPi(ans)} radians`],
+            [`${invLabel(inv)}(${fmtSurd(v)})`, label(ans), u === 'rad' ? fmtDeg(ans) : `${fmtPi(ans)} radians`],
             ['Allowed range', u === 'rad' ? R.text : R.textDeg],
             [`Other angles with ${fn} = ${fmtSurd(v)}`, others.length ? others.map(label).join(', ') : 'none in one turn', others.length ? 'outside the range, so not returned' : undefined],
           ]} />

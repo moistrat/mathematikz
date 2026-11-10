@@ -1,5 +1,5 @@
 import {
-  coterminal, cosExact, degToRad, evalExact, Fn, FNS, fmtDeg, fmtPi, fmtSurd, gcd, INV_RANGE, InvFn, inverseExact,
+  coterminal, cosExact, degToRad, evalExact, Fn, FNS, fmtDeg, fmtPi, fmtSurd, gcd, INV_RANGE, InvFn, inverseExact, invLabel,
   isRational, MINUS, norm360, piInput, quadrant, referenceAngle, sinExact, solveSpecial, SPECIAL_DEGREES, specialValues,
   surd, surdAdd, surdInput, surdMul, surdNeg, surdValue, Surd, tanExact,
 } from './exact'
@@ -51,7 +51,6 @@ const AXIS: Record<number, string> = { 0: 'positive x-axis', 90: 'positive y-axi
 const fnText = (fn: Fn, d: number, u: U) => `${fn}(${u === 'rad' ? fmtPi(d) : fmtDeg(d)})`
 const fv = (v: Surd | null) => (v ? fmtSurd(v) : 'undefined')
 const par = (s: string) => (s.startsWith(MINUS) ? `(${s})` : s)
-const cap = (s: string) => s[0].toUpperCase() + s.slice(1)
 const FN_NAME: Record<Fn, string> = { sin: 'Sine', cos: 'Cosine', tan: 'Tangent' }
 /** Brackets a fraction or negative so that a quotient reads unambiguously. */
 const br = (s: string) => (/[/√]/.test(s) || s.startsWith(MINUS) ? `(${s})` : s)
@@ -205,21 +204,20 @@ function equationSpec(eq: string, sols: number[], u: U, steps: string[]): Spec {
 /* ------------------------------------------------------------------ inverse helpers */
 
 const INVS: InvFn[] = ['arcsin', 'arccos', 'arctan']
-const invName = (inv: InvFn, r: Rng) => (r() < 0.3 ? `${inv.replace('arc', '')}⁻¹` : inv)
 const FN_OF: Record<InvFn, Fn> = { arcsin: 'sin', arccos: 'cos', arctan: 'tan' }
 
 function inverseSteps(inv: InvFn, v: Surd, ans: number, u: U): string[] {
   const fn = FN_OF[inv], R = INV_RANGE[inv]
-  const out = [`${inv}(${fmtSurd(v)}) is the angle in ${u === 'rad' ? R.text : R.textDeg} whose ${fn} is ${fmtSurd(v)}.`]
+  const out = [`${invLabel(inv)}(${fmtSurd(v)}) is the angle in ${u === 'rad' ? R.text : R.textDeg} whose ${fn} is ${fmtSurd(v)}.`]
   if (v.p !== 0) out.push(`Reference angle: ${fnText(fn, referenceAngle(ans), u)} = ${fmtSurd(absSurd(v))}, so the reference angle is ${ang(referenceAngle(ans), u)}.`)
-  if (inv === 'arccos' && v.p < 0) out.push(`Arccos returns angles from 0 to ${half(u)}, so a negative value lands in quadrant II: ${half(u)} ${MINUS} ${ang(referenceAngle(ans), u)} = ${ang(ans, u)}.`)
-  else if (inv !== 'arccos' && v.p < 0) out.push(`${cap(inv)} returns angles between ${u === 'rad' ? `${MINUS}π/2 and π/2` : `${MINUS}90° and 90°`}, so a negative value gives a negative angle (quadrant IV): ${ang(ans, u)}.`)
-  out.push(`So ${inv}(${fmtSurd(v)}) = ${ang(ans, u)}.`)
+  if (inv === 'arccos' && v.p < 0) out.push(`cos⁻¹ returns angles from 0 to ${half(u)}, so a negative value lands in quadrant II: ${half(u)} ${MINUS} ${ang(referenceAngle(ans), u)} = ${ang(ans, u)}.`)
+  else if (inv !== 'arccos' && v.p < 0) out.push(`${invLabel(inv)} returns angles between ${u === 'rad' ? `${MINUS}π/2 and π/2` : `${MINUS}90° and 90°`}, so a negative value gives a negative angle (quadrant IV): ${ang(ans, u)}.`)
+  out.push(`So ${invLabel(inv)}(${fmtSurd(v)}) = ${ang(ans, u)}.`)
   return out
 }
 
-function inverseSpec(inv: InvFn, v: Surd, ans: number, u: U, r: Rng): Spec {
-  const name = invName(inv, r)
+function inverseSpec(inv: InvFn, v: Surd, ans: number, u: U): Spec {
+  const name = invLabel(inv)
   const prompt = `Find the exact value of ${name}(${fmtSurd(v)}). Give your answer in ${u === 'rad' ? 'radians' : 'degrees'}.`
   const hint = `Which angle in ${u === 'rad' ? INV_RANGE[inv].text : INV_RANGE[inv].textDeg} has ${FN_OF[inv]} equal to ${fmtSurd(v)}?`
   return u === 'rad' ? radSpec(prompt, ans, hint, inverseSteps(inv, v, ans, u)) : degSpec(prompt, ans, hint, inverseSteps(inv, v, ans, u))
@@ -522,13 +520,13 @@ const GENS: Gen[] = [
     const vals = specialValues(FN_OF[inv]).filter((v) => v.p >= 0)
     const v = pick(r, vals)
     const ans = inverseExact(inv, v)!
-    return inverseSpec(inv, v, ans, pickUnit(r), r)
+    return inverseSpec(inv, v, ans, pickUnit(r))
   } },
   { lesson: 'inverse-trig', level: 2, make: (r) => {
     const inv = pick(r, INVS)
     const v = pick(r, specialValues(FN_OF[inv]).filter((x) => x.p < 0))
     const ans = inverseExact(inv, v)!
-    return inverseSpec(inv, v, ans, pickUnit(r), r)
+    return inverseSpec(inv, v, ans, pickUnit(r))
   } },
   { lesson: 'inverse-trig', level: 3, make: (r) => {
     const inv = pick(r, INVS)
@@ -540,13 +538,13 @@ const GENS: Gen[] = [
       const v = evalExact(fn, d)
       if (!v) continue
       const ans = inverseExact(inv, v)!
-      return radSpec(`Find the exact value of ${inv}(${fnText(fn, d, 'rad')}). Give your answer in radians.`, ans, `${inv} always returns an angle in ${R.text}, whatever angle you started with.`, [
+      return radSpec(`Find the exact value of ${invLabel(inv)}(${fnText(fn, d, 'rad')}). Give your answer in radians.`, ans, `${invLabel(inv)} always returns an angle in ${R.text}, whatever angle you started with.`, [
         `Evaluate the inside first: ${fnText(fn, d, 'rad')} = ${fmtSurd(v)}.`,
-        `Now find ${inv}(${fmtSurd(v)}): the angle in ${R.text} whose ${fn} is ${fmtSurd(v)} is ${fmtPi(ans)}.`,
-        `Note that ${fmtPi(d)} is outside ${R.text}, so ${inv} cannot return it: ${inv}(${fnText(fn, d, 'rad')}) = ${fmtPi(ans)}.`,
+        `Now find ${invLabel(inv)}(${fmtSurd(v)}): the angle in ${R.text} whose ${fn} is ${fmtSurd(v)} is ${fmtPi(ans)}.`,
+        `Note that ${fmtPi(d)} is outside ${R.text}, so ${invLabel(inv)} cannot return it: ${invLabel(inv)}(${fnText(fn, d, 'rad')}) = ${fmtPi(ans)}.`,
       ])
     }
-    return radSpec('Find the exact value of arcsin(sin(5π/6)).', 30, 'arcsin returns angles in [−π/2, π/2].', ['sin(5π/6) = 1/2.', 'arcsin(1/2) = π/6.'])
+    return radSpec('Find the exact value of sin⁻¹(sin(5π/6)).', 30, 'sin⁻¹ returns angles in [−π/2, π/2].', ['sin(5π/6) = 1/2.', 'sin⁻¹(1/2) = π/6.'])
   } },
   { lesson: 'inverse-trig', level: 3, make: (r) => {
     for (let tries = 0; tries < 200; tries++) {
@@ -556,12 +554,12 @@ const GENS: Gen[] = [
       const a = inverseExact(inv, v)!
       const res = evalExact(outer, a)
       if (!res || res.p === 0) continue
-      return valueSpec(`Find the exact value of ${outer}(${inv}(${fmtSurd(v)})).`, res, `Find the angle ${inv}(${fmtSurd(v)}) first, then take the ${outer} of it.`, [
-        `First, ${inv}(${fmtSurd(v)}) = ${fmtPi(a)} (the angle in ${INV_RANGE[inv].text} whose ${FN_OF[inv]} is ${fmtSurd(v)}).`,
+      return valueSpec(`Find the exact value of ${outer}(${invLabel(inv)}(${fmtSurd(v)})).`, res, `Find the angle ${invLabel(inv)}(${fmtSurd(v)}) first, then take the ${outer} of it.`, [
+        `First, ${invLabel(inv)}(${fmtSurd(v)}) = ${fmtPi(a)} (the angle in ${INV_RANGE[inv].text} whose ${FN_OF[inv]} is ${fmtSurd(v)}).`,
         `Then ${outer}(${fmtPi(a)}) = ${fmtSurd(res)}.`,
       ])
     }
-    return valueSpec('Find the exact value of sin(arccos(1/2)).', surd(1, 2, 3), 'arccos(1/2) = π/3.', ['arccos(1/2) = π/3.', 'sin(π/3) = √3/2.'])
+    return valueSpec('Find the exact value of sin(cos⁻¹(1/2)).', surd(1, 2, 3), 'cos⁻¹(1/2) = π/3.', ['cos⁻¹(1/2) = π/3.', 'sin(π/3) = √3/2.'])
   } },
 ]
 
