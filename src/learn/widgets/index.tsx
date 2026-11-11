@@ -1,4 +1,5 @@
 import { WidgetId } from '../types'
+import { CubicRoots, ExprLab, Holes, RatGraph } from './Algebra'
 import { Converter, Radians } from './Angles'
 import { Astc, Reference, Triangles, UnitCircle } from './Circle'
 import { GraphSolve, Inverse } from './Equations'
@@ -13,5 +14,9 @@ export function Widget({ id }: { id: WidgetId }) {
     case 'reference': return <Reference />
     case 'graphsolve': return <GraphSolve />
     case 'inverse': return <Inverse />
+    case 'exprlab': return <ExprLab />
+    case 'cubicroots': return <CubicRoots />
+    case 'holes': return <Holes />
+    case 'ratgraph': return <RatGraph />
   }
 }

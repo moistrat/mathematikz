@@ -1,4 +1,4 @@
-export type WidgetId = 'radians' | 'converter' | 'unitcircle' | 'triangles' | 'astc' | 'reference' | 'graphsolve' | 'inverse'
+export type WidgetId = 'radians' | 'converter' | 'unitcircle' | 'triangles' | 'astc' | 'reference' | 'graphsolve' | 'inverse' | 'exprlab' | 'cubicroots' | 'holes' | 'ratgraph'
 
 export type Block =
   | { t: 'h'; text: string }

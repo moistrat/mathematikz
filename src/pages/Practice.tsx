@@ -28,6 +28,7 @@ function useEnterToContinue(active: boolean, next: () => void) {
 const KEY_LABELS: [string, string, (q: Question) => boolean][] = [
   ['π', 'π', (q) => q.pad.pi],
   ['√', '√', (q) => q.pad.root],
+  ['^', '^', (q) => !!q.alg],
   ['/', '/', () => true],
   ['−', '−', () => true],
   ['(', '(', () => true],
@@ -85,7 +86,7 @@ function Ask({ q, mode, onResult, onNext, nextLabel }: {
       {!done && (
         <div className="keys" aria-label="Symbols">
           {KEY_LABELS.filter(([, , show]) => show(q)).map(([label, ins]) => <button key={label} type="button" className="symkey" onClick={() => insert(ins)} aria-label={`Insert ${label}`}>{label}</button>)}
-          <span className="muted small">You can also type pi and sqrt(3). Any equivalent exact form counts.</span>
+          <span className="muted small">{q.alg ? 'Type powers with ^ (x^2) and write products side by side: 2x(x + 1). Any equivalent form counts, as long as it is in the form the question asks for.' : q.pad.alg ? 'Type whole numbers or fractions such as −3 or 1/2, and separate several answers with commas.' : 'You can also type pi and sqrt(3). Any equivalent exact form counts.'}</span>
         </div>
       )}
       {note && state !== 'right' && <p className="q-note">{note}</p>}
@@ -109,13 +110,12 @@ function Ask({ q, mode, onResult, onNext, nextLabel }: {
 
 interface Score { answered: number; correct: number; streak: number; best: number }
 const EMPTY: Score = { answered: 0, correct: 0, streak: 0, best: 0 }
-const TOPICS = [{ id: 'all', name: 'Mixed' }, ...LESSONS.map((l) => ({ id: l.id, name: l.title }))]
 
 function FreePractice() {
   const [topic, setTopic] = useState<string>(() => load('mathematikz.free.topic', 'all'))
   const [level, setLevel] = useState<number>(() => load('mathematikz.free.level', 1))
   const [score, setScore] = useState<Score>(() => load('mathematikz.free.score', EMPTY))
-  const make = (t: string, l: number) => generateQuestion(t === 'all' ? 'all' : [t], l)
+  const make = (t: string, l: number) => generateQuestion(t === 'all' ? 'all' : (scopeById(t)?.lessons ?? [t]), l)
   const [q, setQ] = useState(() => make(topic, level))
   const change = (t: string, l: number) => { setTopic(t); setLevel(l); save('mathematikz.free.topic', t); save('mathematikz.free.level', l); setQ(make(t, l)) }
   const onResult = (ok: boolean) => {
@@ -139,8 +139,20 @@ function FreePractice() {
           <button className="btn ghost" onClick={() => { setScore(EMPTY); save('mathematikz.free.score', EMPTY) }}>Reset</button>
         </div>
       </div>
-      <div className="seg topic-seg" role="group" aria-label="Topic">
-        {TOPICS.map((t) => <button key={t.id} className={t.id === topic ? 'on' : ''} onClick={() => change(t.id, level)}>{t.name}</button>)}
+      <div className="topic-groups">
+        <div className="seg topic-seg" role="group" aria-label="Topic">
+          <button className={topic === 'all' ? 'on' : ''} onClick={() => change('all', level)}>Everything, mixed</button>
+        </div>
+        {UNITS.map((u, ui) => (
+          <div key={u.id} className="topic-group">
+            <p className="eyebrow">Unit {ui + 1} &middot; {u.title}</p>
+            <div className="seg topic-seg" role="group" aria-label={`Topics in unit ${ui + 1}`}>
+              {[{ id: unitScopeId(u.id), name: 'Mixed' }, ...u.lessons.map((l) => ({ id: l.id, name: l.title }))].map((t) => (
+                <button key={t.id} className={t.id === topic ? 'on' : ''} onClick={() => change(t.id, level)}>{t.name}</button>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
       <div className="quiz-one"><Ask q={q} mode="free" onResult={onResult} onNext={() => setQ(make(topic, level))} nextLabel="Next question" /></div>
     </>

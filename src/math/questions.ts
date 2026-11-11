@@ -3,10 +3,12 @@ import {
   isRational, MINUS, norm360, piInput, quadrant, referenceAngle, sinExact, solveSpecial, SPECIAL_DEGREES, specialValues,
   surd, surdAdd, surdInput, surdMul, surdNeg, surdValue, Surd, tanExact,
 } from './exact'
+import { AlgSpec, checkAlgebra } from './algebra'
+import { ALG_GENS } from './algebraQuestions'
 import { evaluate, parseList, saysUndefined, stripLead } from './parse'
 import { mulberry, pick, Rng } from './rng'
 
-export type Kind = 'value' | 'approx' | 'set' | 'pair'
+export type Kind = 'value' | 'approx' | 'set' | 'pair' | 'alg'
 
 export interface Question {
   id: string
@@ -28,15 +30,18 @@ export interface Question {
   tol: number
   hint: string
   explanation: string[]
-  pad: { pi: boolean; root: boolean; comma: boolean }
+  /** alg: show the algebra keys (^ and brackets) and the algebra hint */
+  pad: { pi: boolean; root: boolean; comma: boolean; alg?: boolean }
+  /** present for symbolic questions (expand, factor, simplify, solve for a letter) */
+  alg?: AlgSpec
 }
 
-type Spec = Omit<Question, 'id' | 'lesson' | 'level' | 'gen'>
-interface Gen { lesson: string; level: number; make: (r: Rng) => Spec }
+export type Spec = Omit<Question, 'id' | 'lesson' | 'level' | 'gen'>
+export interface Gen { lesson: string; level: number; make: (r: Rng) => Spec }
 
 export const LEVELS = [
-  { level: 1, name: 'Warm-up', blurb: 'One idea, the common angles.' },
-  { level: 2, name: 'Standard', blurb: 'All quadrants, mixed forms.' },
+  { level: 1, name: 'Warm-up', blurb: 'One idea at a time, friendly numbers.' },
+  { level: 2, name: 'Standard', blurb: 'Mixed forms and a few more steps.' },
   { level: 3, name: 'Challenge', blurb: 'Several steps, like exam questions.' },
 ]
 
@@ -225,7 +230,7 @@ function inverseSpec(inv: InvFn, v: Surd, ans: number, u: U): Spec {
 
 /* ------------------------------------------------------------------ the generators */
 
-const GENS: Gen[] = [
+const TRIG_GENS: Gen[] = [
   /* ============================ degrees and radians ============================ */
   { lesson: 'angles', level: 1, make: (r) => {
     const d = pick(r, SPECIAL_DEGREES.filter((x) => x > 0))
@@ -563,6 +568,8 @@ const GENS: Gen[] = [
   } },
 ]
 
+const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS]
+
 /* ------------------------------------------------------------------ public API */
 
 export const GENERATORS = GENS
@@ -587,26 +594,34 @@ export function generateQuestion(lessonIds: string[] | 'all', level: number, see
 export interface Check { ok: boolean; invalid?: boolean; note?: string }
 const NOTE_EXACT = 'Give an exact answer, not a decimal (for example √3/2 or 5π/6).'
 const NOTE_FORMAT = 'Could not read that. Try forms like √3/2, sqrt(3)/2, −1/2 or 5π/6 (you can type "pi").'
+const NOTE_FORMAT_ALG = 'Could not read that. Type whole numbers or fractions such as −3 or 1/2, and separate several answers with commas.'
+const NONE = /^(no\s+(real\s+)?solutions?|none|∅|empty|dne|no\s+roots?)$/i
 const hasDecimal = (s: string) => /\d\.|\.\d/.test(s)
 
 export function checkAnswer(q: Question, text: string): Check {
   const raw = text.trim()
   if (!raw) return { ok: false, invalid: true, note: 'Type an answer first.' }
+  if (q.alg) return checkAlgebra(q.alg, raw)
+  const NF = q.pad.alg ? NOTE_FORMAT_ALG : NOTE_FORMAT
+  const NE = q.pad.alg ? 'Give an exact fraction such as 1/3, not a decimal.' : NOTE_EXACT
 
   if (q.kind === 'value' || q.kind === 'approx') {
     const want = q.answers[0]
     const said = saysUndefined(stripLead(raw))
     if (want === null) return said ? { ok: true } : { ok: false, note: 'Check the coordinates: tan θ = y / x, and one of them is zero here.' }
     if (said) return { ok: false }
-    if (q.needsExact && hasDecimal(raw)) return { ok: false, invalid: true, note: NOTE_EXACT }
+    if (q.needsExact && hasDecimal(raw)) return { ok: false, invalid: true, note: NE }
     let g: number
-    try { g = evaluate(stripLead(raw)) } catch { return { ok: false, invalid: true, note: NOTE_FORMAT } }
+    try { g = evaluate(stripLead(raw)) } catch { return { ok: false, invalid: true, note: NF } }
     return { ok: Math.abs(g - want) <= q.tol }
   }
 
+  const none = NONE.test(stripLead(raw).trim())
+  if (q.kind === 'set' && q.answers.length === 0) return none ? { ok: true } : { ok: false, note: 'Check each candidate in the original equation: does it make a denominator zero?' }
+  if (none) return { ok: false, note: q.pad.alg ? 'There is at least one solution. Check your working.' : undefined }
   let gs: number[]
-  try { gs = parseList(raw) } catch { return { ok: false, invalid: true, note: NOTE_FORMAT } }
-  if (q.needsExact && hasDecimal(raw)) return { ok: false, invalid: true, note: NOTE_EXACT }
+  try { gs = parseList(raw) } catch { return { ok: false, invalid: true, note: NF } }
+  if (q.needsExact && hasDecimal(raw)) return { ok: false, invalid: true, note: NE }
   const want = q.answers as number[]
   if (q.kind === 'pair') {
     if (gs.length !== 2) return { ok: false, invalid: true, note: 'Give both coordinates, like (1/2, √3/2).' }
@@ -614,7 +629,7 @@ export function checkAnswer(q: Question, text: string): Check {
   }
   const sorted = [...gs].sort((a, b) => a - b)
   const dedup = sorted.filter((g, i) => i === 0 || Math.abs(g - sorted[i - 1]) > 1e-9)
-  if (dedup.length < want.length && dedup.every((g) => want.some((w) => Math.abs(g - w) <= q.tol))) return { ok: false, note: 'Those are all correct, but there are more solutions in the interval. Check every quadrant, and the endpoints.' }
-  if (dedup.length > want.length) return { ok: false, note: 'Too many: check that each angle is a real solution and lies inside the interval.' }
+  if (dedup.length < want.length && dedup.every((g) => want.some((w) => Math.abs(g - w) <= q.tol))) return { ok: false, note: q.pad.alg ? 'Those are all correct, but there are more solutions. Did you find every factor that can be zero?' : 'Those are all correct, but there are more solutions in the interval. Check every quadrant, and the endpoints.' }
+  if (dedup.length > want.length) return { ok: false, note: q.pad.alg ? 'Too many: substitute each one back into the original equation. Does it really work?' : 'Too many: check that each angle is a real solution and lies inside the interval.' }
   return { ok: dedup.length === want.length && dedup.every((g, i) => Math.abs(g - want[i]) <= q.tol) }
 }
