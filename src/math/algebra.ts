@@ -87,7 +87,13 @@ export function pMul(a: Poly, b: Poly): Poly {
   return mk(ts)
 }
 export function pPow(a: Poly, k: number): Poly {
-  if (!Number.isInteger(k) || k < 0 || k > 12) throw new AlgError('Powers must be whole numbers from 0 to 12.')
+  // a single term can be raised directly to larger powers, as long as its coefficient stays exact
+  if (a.length === 1 && Number.isInteger(k) && k > 12 && k <= 40) {
+    const t = a[0]
+    if (Math.pow(Math.max(Math.abs(t.c.n), t.c.d), k) > 9e15) throw new AlgError('That number is too large to work with exactly.')
+    return mk([{ c: fPow(t.c, k), e: Object.fromEntries(Object.entries(t.e).map(([v, x]) => [v, x * k])) }])
+  }
+  if (!Number.isInteger(k) || k < 0 || k > 12) throw new AlgError('Powers must be whole numbers from 0 to 12 (up to 40 for a single term).')
   let out = pConst(1)
   for (let i = 0; i < k; i++) out = pMul(out, a)
   return out
@@ -518,6 +524,8 @@ export interface AlgSpec {
   answer: string
   /** equiv mode: the letter being solved for (must not appear in the answer) */
   solveFor?: string
+  /** the answer must be written with positive exponents only (no x^(-2)) */
+  positiveOnly?: boolean
 }
 export interface AlgCheck { ok: boolean; invalid?: boolean; note?: string }
 
@@ -554,6 +562,7 @@ export function checkAlgebra(spec: AlgSpec, raw: string): AlgCheck {
   }
   const expectedNode = parse(spec.answer)
   expected = toRat(expectedNode)
+  if (spec.positiveOnly && /\^\s*\(?\s*[-−]|⁻/.test(raw)) return { ok: false, note: 'Write the answer with positive exponents only: a power with a negative exponent moves to the other side of the fraction bar and the exponent changes sign.' }
 
   if (spec.mode === 'equiv') {
     if (spec.solveFor && rVars(student).has(spec.solveFor)) return { ok: false, note: `Your answer still contains ${spec.solveFor}. Get ${spec.solveFor} on its own.` }

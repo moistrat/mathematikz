@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { evalExpr, parseRat, rEq } from './algebra'
+import { evaluate } from './parse'
 import { parseSet, setsEqual } from './solve'
 import { buildBoard, DECKS, judgeClicks, matchStars, rootRound, rootValue, sprintScore, survivalLevel } from './games'
 
@@ -61,6 +62,29 @@ describe('unit 3 decks', () => {
         expect(roots.length).toBe(2)
         for (const x of roots) expect(Math.abs(evalExpr(lhs, { x }) - evalExpr(rhs, { x })), `${a.text} at x = ${x}`).toBeLessThan(1e-9)
       }
+    }
+  })
+})
+
+describe('unit 4 decks', () => {
+  const pairs = (deck: string, seed: number) => {
+    const board = buildBoard(deck, 6, seed)
+    return [0, 1, 2, 3, 4, 5].map((p) => board.filter((t) => t.pair === p).sort((x, y) => x.key.localeCompare(y.key)))
+  }
+  it('roots pair with their simplest form', () => {
+    for (let s = 1; s <= 80; s++) for (const [a, b] of pairs('radical-simplify', s * 3)) expect(Math.abs(evaluate(a.text) - evaluate(b.text)), `${a.text} vs ${b.text}`).toBeLessThan(1e-9)
+  })
+  it('powers pair with their values', () => {
+    const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹'
+    const plain = (t: string) => t.replace(/⁻?[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, (m) => `^(${m.startsWith('⁻') ? '-' : ''}${[...m.replace('⁻', '')].map((c) => SUP.indexOf(c)).join('')})`)
+    for (let s = 1; s <= 80; s++) for (const [a, b] of pairs('exponent-values', s * 5)) expect(Math.abs(evaluate(plain(a.text)) - evaluate(b.text)), `${a.text} vs ${b.text}`).toBeLessThan(1e-9)
+  })
+  it('logarithms pair with their values', () => {
+    for (let s = 1; s <= 80; s++) for (const [a, b] of pairs('log-values', s * 7)) {
+      const m = /^log([₀-₉]+) (.*)$/.exec(a.text)!
+      const base = Number([...m[1]].map((c) => '₀₁₂₃₄₅₆₇₈₉'.indexOf(c)).join(''))
+      const arg = evaluate(m[2].replace(/[()]/g, ''))
+      expect(Math.abs(Math.log(arg) / Math.log(base) - evaluate(b.text)), `${a.text} vs ${b.text}`).toBeLessThan(1e-9)
     }
   })
 })

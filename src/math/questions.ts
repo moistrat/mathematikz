@@ -6,8 +6,10 @@ import {
 import { AlgSpec, checkAlgebra } from './algebra'
 import { ALG_GENS } from './algebraQuestions'
 import { EQ_GENS } from './equationQuestions'
+import { POW_GENS } from './powerQuestions'
 import { complement, IntervalSet, normalise, parseSet, SetError, setsEqual } from './solve'
 import { evaluate, parseList, saysUndefined, stripLead } from './parse'
+import { radicalFormProblem } from './radicals'
 import { mulberry, pick, Rng } from './rng'
 
 export type Kind = 'value' | 'approx' | 'set' | 'pair' | 'alg' | 'ineq'
@@ -33,11 +35,15 @@ export interface Question {
   hint: string
   explanation: string[]
   /** alg: show the algebra keys (^ and brackets) and the algebra hint */
-  pad: { pi: boolean; root: boolean; comma: boolean; alg?: boolean }
+  pad: { pi: boolean; root: boolean; comma: boolean; alg?: boolean; extra?: string[] }
   /** present for symbolic questions (expand, factor, simplify, solve for a letter) */
   alg?: AlgSpec
   /** ineq: the solution set the student's inequality or interval must equal */
   iv?: IntervalSet
+  /** value answers: must also be in simplest radical form (no square factor under the root, no root in a denominator) */
+  simplest?: boolean
+  /** tests only: typed forms that equal the answer but must be rejected (for example sqrt(72) when 6sqrt(2) is wanted) */
+  rejects?: string[]
   /** tests only: does this x satisfy the equation or inequality as written? Used to check answers independently. */
   holds?: (x: number) => boolean
 }
@@ -574,7 +580,7 @@ const TRIG_GENS: Gen[] = [
   } },
 ]
 
-const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS]
+const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS]
 
 /* ------------------------------------------------------------------ public API */
 
@@ -620,7 +626,9 @@ export function checkAnswer(q: Question, text: string): Check {
     if (q.needsExact && hasDecimal(raw)) return { ok: false, invalid: true, note: NE }
     let g: number
     try { g = evaluate(stripLead(raw)) } catch { return { ok: false, invalid: true, note: NF } }
-    return { ok: Math.abs(g - want) <= q.tol }
+    const ok = Math.abs(g - want) <= q.tol
+    if (ok && q.simplest) { const problem = radicalFormProblem(raw); if (problem) return { ok: false, note: problem } }
+    return { ok }
   }
 
   const none = NONE.test(stripLead(raw).trim())

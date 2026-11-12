@@ -3,6 +3,7 @@ import { CubicRoots, ExprLab, Holes, RatGraph } from './Algebra'
 import { Converter, Radians } from './Angles'
 import { Astc, Reference, Triangles, UnitCircle } from './Circle'
 import { GraphSolve, Inverse } from './Equations'
+import { ExpLog, LogLab, RadicalFactor } from './Powers'
 import { LinearGraph, QuadLab, SignChart, SystemsLab } from './Solving'
 
 export function Widget({ id }: { id: WidgetId }) {
@@ -23,5 +24,8 @@ export function Widget({ id }: { id: WidgetId }) {
     case 'quadlab': return <QuadLab />
     case 'signchart': return <SignChart />
     case 'systemslab': return <SystemsLab />
+    case 'explog': return <ExpLog />
+    case 'radicalfactor': return <RadicalFactor />
+    case 'loglab': return <LogLab />
   }
 }

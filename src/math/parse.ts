@@ -15,6 +15,7 @@ function tokenize(src: string): Tok[] {
     .replace(/÷/g, '/')
     .replace(/π/g, ' pi ')
     .replace(/√/g, ' sqrt ')
+    .replace(/∛/g, ' cbrt ')
     .replace(/°/g, '')
     .replace(/\s+/g, ' ')
   const out: Tok[] = []
@@ -96,6 +97,12 @@ export function evaluate(src: string): number {
       throw new ParseError(`unexpected ${k.v}`)
     }
     if (k.v === 'pi') return Math.PI
+    if (k.v === 'e') return Math.E
+    if (k.v === 'cbrt') return Math.cbrt(power())
+    if (k.v === 'ln' || k.v === 'log' || k.v === 'exp') {
+      const v = power()
+      return k.v === 'ln' ? Math.log(v) : k.v === 'log' ? Math.log10(v) : Math.exp(v)
+    }
     if (k.v === 'sqrt' || k.v === 'root') {
       if (isOp('-')) throw new ParseError('sqrt of negative')
       const v = power()

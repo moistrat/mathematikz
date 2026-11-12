@@ -19,7 +19,7 @@ import {
 
 /* ------------------------------------------------------------------ small helpers */
 
-const MN = (s: string) => s.replace(/-/g, MINUS)
+export const MN = (s: string) => s.replace(/-/g, MINUS)
 /** neat display of an ASCII expression: x + (-3) becomes x − 3, and (6) becomes 6 */
 const tidy = (s: string) => s
   .replace(/\+ \(-(\d+)\)/g, '- $1')
@@ -27,12 +27,12 @@ const tidy = (s: string) => s
   .replace(/([+-]) \((\d+)\)/g, '$1 $2')
 const pretty = (s: string) => basePretty(tidy(s))
 /** coefficient text: 1 -> '', -1 -> '−', 5 -> '5' */
-const cf = (k: number) => (k === 1 ? '' : k === -1 ? MINUS : MN(String(k)))
-const tx = (k: number, v = 'x') => `${cf(k)}${v}`
+export const cf = (k: number) => (k === 1 ? '' : k === -1 ? MINUS : MN(String(k)))
+export const tx = (k: number, v = 'x') => `${cf(k)}${v}`
 const sq = (n: number) => (n < 0 ? `(${MN(String(n))})²` : `${n}²`)
 /** the last step of a linear solve: divide (or multiply by -1), skipped when the coefficient is 1 */
 const divStep = (k: number, value: string, v = 'x'): string[] => (k === 1 ? [] : k === -1 ? [`Multiply both sides by ${MINUS}1: ${v} = ${value}.`] : [`Divide both sides by ${MN(String(k))}: ${v} = ${value}.`])
-const lead = (c: number) => (c === 1 ? '' : c === -1 ? '-' : String(c))
+export const lead = (c: number) => (c === 1 ? '' : c === -1 ? '-' : String(c))
 /** ASCII  a x + b  ("2x - 3", "-x + 4", "x") */
 const lin = (a: number, b: number, v = 'x') => `${lead(a)}${v}${b === 0 ? '' : b < 0 ? ` - ${-b}` : ` + ${b}`}`
 /** ASCII  a x^2 + b x + c */
@@ -44,9 +44,9 @@ function quad(a: number, b: number, c: number, v = 'x'): string {
   if (c || !parts.length) parts.push(parts.length ? t(c, '') : String(c))
   return parts.join(' ')
 }
-const sgnText = (n: number) => (n < 0 ? `${MINUS} ${-n}` : `+ ${n}`)
+export const sgnText = (n: number) => (n < 0 ? `${MINUS} ${-n}` : `+ ${n}`)
 
-function search<T>(tries: number, f: () => T | null): T | null {
+export function search<T>(tries: number, f: () => T | null): T | null {
   for (let i = 0; i < tries; i++) { const v = f(); if (v) return v }
   return null
 }
@@ -61,10 +61,10 @@ function ratText(x: number): string {
 }
 
 /** An exact answer: its value, how it is written on screen, and how a student types it. */
-interface Ex { val: number; disp: string; inp: string; exact: boolean }
-const nonTerminating = (f: Frac) => { let d = f.d; while (d % 2 === 0) d /= 2; while (d % 5 === 0) d /= 5; return d !== 1 }
-const exF = (f: Frac): Ex => ({ val: fNum(f), disp: fmtFrac(f), inp: fmtFrac(f).replace(MINUS, '-'), exact: nonTerminating(f) })
-const exR = (x: ExactRoot): Ex => ({ val: rootValue(x), disp: fmtRoot(x), inp: rootInput(x), exact: x.b.n !== 0 || nonTerminating(x.a) })
+export interface Ex { val: number; disp: string; inp: string; exact: boolean }
+export const nonTerminating = (f: Frac) => { let d = f.d; while (d % 2 === 0) d /= 2; while (d % 5 === 0) d /= 5; return d !== 1 }
+export const exF = (f: Frac): Ex => ({ val: fNum(f), disp: fmtFrac(f), inp: fmtFrac(f).replace(MINUS, '-'), exact: nonTerminating(f) })
+export const exR = (x: ExactRoot): Ex => ({ val: rootValue(x), disp: fmtRoot(x), inp: rootInput(x), exact: x.b.n !== 0 || nonTerminating(x.a) })
 const exSqrt = (n: number, neg = false): Ex => {
   const s = Math.round(Math.sqrt(n))
   if (s * s === n) return exF(fr(neg ? -s : s))
@@ -74,7 +74,7 @@ const exSqrt = (n: number, neg = false): Ex => {
   return { val: (neg ? -1 : 1) * Math.sqrt(n), disp, inp: `${neg ? '-' : ''}${k === 1 ? '' : `${k}*`}sqrt(${r})`, exact: true }
 }
 
-function exactSet(prompt: string, items: Ex[], v: string, hint: string, expl: string[], shown?: string, holds?: (x: number) => boolean): Spec {
+export function exactSet(prompt: string, items: Ex[], v: string, hint: string, expl: string[], shown?: string, holds?: (x: number) => boolean): Spec {
   const sorted = [...items].sort((a, b) => a.val - b.val).filter((e, i, xs) => i === 0 || Math.abs(e.val - xs[i - 1].val) > 1e-9)
   return {
     prompt, kind: 'set', answers: sorted.map((e) => e.val),
@@ -84,7 +84,7 @@ function exactSet(prompt: string, items: Ex[], v: string, hint: string, expl: st
   }
 }
 
-function pairSpec(prompt: string, x: Frac, y: Frac, hint: string, expl: string[], holds?: (x: number) => boolean): Spec {
+export function pairSpec(prompt: string, x: Frac, y: Frac, hint: string, expl: string[], holds?: (x: number) => boolean): Spec {
   return {
     prompt, kind: 'pair', answers: [fNum(x), fNum(y)], display: `(${fmtFrac(x)}, ${fmtFrac(y)})`,
     input: `(${fmtFrac(x).replace(MINUS, '-')}, ${fmtFrac(y).replace(MINUS, '-')})`, unit: '', needsExact: nonTerminating(x) || nonTerminating(y), tol: 1e-9,

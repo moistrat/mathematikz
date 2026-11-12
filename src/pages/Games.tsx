@@ -4,7 +4,7 @@ import { buildBoard, DECKS, judgeClicks, matchStars, RootRound, rootRound, rootV
 import { scopeById, unitScopeId } from '../math/practice'
 import { checkAnswer, generateQuestion, Question } from '../math/questions'
 import { load, save } from '../state/storage'
-import { KEY_LABELS, useEnterToContinue } from './Practice'
+import { keysFor, useEnterToContinue } from './Practice'
 
 const GAMES = [
   { id: 'sprint', name: 'Sprint', blurb: '60 seconds. Answer as many questions as you can; streaks earn bonus points.' },
@@ -56,7 +56,7 @@ function QuickAsk({ q, onAnswer, onNext }: { q: Question; onAnswer: (ok: boolean
       </div>
       {!miss && (
         <div className="keys" aria-label="Symbols">
-          {KEY_LABELS.filter(([, , show]) => show(q)).map(([label, ins]) => <button key={label} type="button" className="symkey" onClick={() => insert(ins)} aria-label={`Insert ${label}`}>{label}</button>)}
+          {keysFor(q).map(([label, ins]) => <button key={label} type="button" className="symkey" onClick={() => insert(ins)} aria-label={`Insert ${label}`}>{label}</button>)}
         </div>
       )}
       {note && !miss && <p className="q-note">{note}</p>}

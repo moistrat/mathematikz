@@ -373,3 +373,8 @@ p.warn { margin: .6rem 0 0; }
 .tile.done { opacity: .45; border-color: var(--border); cursor: default; }
 .rootgraph { background: var(--canvas-bg); }
 .wsvg .w-shade { fill: var(--accent); opacity: .35; }
+.chip-row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; min-height: 40px; margin: .2rem 0 .4rem; }
+.chip { display: inline-grid; place-items: center; min-width: 34px; height: 34px; padding: 0 .4rem; border: 1px solid var(--border-strong); border-radius: 6px; background: var(--surface-2); font-family: var(--mono); font-weight: 600; }
+.chip-group { display: inline-flex; gap: .25rem; padding: .25rem; border: 1px dashed var(--accent); border-radius: 8px; }
+.chip-group.out .chip { background: color-mix(in srgb, var(--accent) 22%, var(--surface-2)); border-color: var(--accent); }
+.chip.stay { color: var(--text-dim); }

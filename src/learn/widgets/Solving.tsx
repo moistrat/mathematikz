@@ -21,7 +21,7 @@ function poly(terms: [number, string][]): string {
 }
 
 /** A square plot window with grid, axes and numbered ticks. */
-function Plot({ x0, x1, y0, y1, children, label }: { x0: number; x1: number; y0: number; y1: number; children: (sx: (x: number) => number, sy: (y: number) => number) => React.ReactNode; label: string }) {
+export function Plot({ x0, x1, y0, y1, children, label }: { x0: number; x1: number; y0: number; y1: number; children: (sx: (x: number) => number, sy: (y: number) => number) => React.ReactNode; label: string }) {
   const W = 640, H = 300
   const sx = (x: number) => ((x - x0) / (x1 - x0)) * W
   const sy = (y: number) => H - ((y - y0) / (y1 - y0)) * H
@@ -45,7 +45,7 @@ function Plot({ x0, x1, y0, y1, children, label }: { x0: number; x1: number; y0:
 }
 
 /** a polyline for y = f(x), broken where f is not finite or jumps */
-function curve(f: (x: number) => number, x0: number, x1: number, sx: (x: number) => number, sy: (y: number) => number, jump = Infinity, n = 400): string {
+export function curve(f: (x: number) => number, x0: number, x1: number, sx: (x: number) => number, sy: (y: number) => number, jump = Infinity, n = 400): string {
   let d = '', pen = false, last = NaN
   for (let i = 0; i <= n; i++) {
     const x = x0 + ((x1 - x0) * i) / n, y = f(x)

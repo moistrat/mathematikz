@@ -16,8 +16,8 @@ describe('course content', () => {
       expect(l.blocks.filter((b) => b.t === 'widget').length, l.id).toBeGreaterThanOrEqual(1)
       expect(l.blocks.filter((b) => b.t === 'example').length, l.id).toBeGreaterThanOrEqual(2)
     }
-    expect(UNITS.length).toBeGreaterThanOrEqual(3)
-    expect(LESSONS.length).toBeGreaterThanOrEqual(17)
+    expect(UNITS.length).toBeGreaterThanOrEqual(4)
+    expect(LESSONS.length).toBeGreaterThanOrEqual(20)
   })
   it('check questions are well formed', () => {
     for (const l of LESSONS) for (const b of l.blocks) {
@@ -37,6 +37,6 @@ describe('course content', () => {
   })
   it('every widget used in a lesson exists', async () => {
     const used = new Set(LESSONS.flatMap((l) => l.blocks.flatMap((b) => (b.t === 'widget' ? [b.id] : []))))
-    expect([...used].sort()).toEqual(['astc', 'converter', 'cubicroots', 'exprlab', 'graphsolve', 'holes', 'inverse', 'lineargraph', 'quadlab', 'radians', 'ratgraph', 'reference', 'signchart', 'systemslab', 'triangles', 'unitcircle'])
+    expect([...used].sort()).toEqual(['astc', 'converter', 'cubicroots', 'explog', 'exprlab', 'graphsolve', 'holes', 'inverse', 'lineargraph', 'loglab', 'quadlab', 'radians', 'radicalfactor', 'ratgraph', 'reference', 'signchart', 'systemslab', 'triangles', 'unitcircle'])
   })
 })

@@ -2,7 +2,7 @@
  * Pure logic for the Games page: card decks for the match-up game, scoring, and the graph rounds for Root Hunter.
  * Kept free of React so it can be tested like the rest of the maths.
  */
-import { parsePoly, fmtPoly, pretty, pMul } from './algebra'
+import { fmtFrac, fr, parsePoly, fmtPoly, pretty, pMul } from './algebra'
 import {
   cosExact, fmtDeg, fmtPi, fmtSurd, sinExact, SPECIAL_DEGREES, tanExact,
 } from './exact'
@@ -88,6 +88,47 @@ export const DECKS: Deck[] = [
         if (!p || !q || p >= q) continue
         const poly = fmtPoly(pMul(parsePoly(`x-(${p})`), parsePoly(`x-(${q})`)), true)
         c.push([`${pretty(poly)} = 0`, `x = ${p < 0 ? '−' : ''}${Math.abs(p)}, ${q < 0 ? '−' : ''}${Math.abs(q)}`])
+      }
+      return draw(r, c, n)
+    },
+  },
+  {
+    id: 'radical-simplify', name: 'Simplifying roots', blurb: 'Pair each square root with its simplest form.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      for (let i = 0; i < 120; i++) {
+        const s = ri(r, 2, 9), rad = pick(r, [2, 3, 5, 6, 7, 10, 11])
+        c.push([`√${s * s * rad}`, `${s}√${rad}`])
+      }
+      return draw(r, c, n)
+    },
+  },
+  {
+    id: 'exponent-values', name: 'Powers and their values', blurb: 'Pair each power, including negative and fractional exponents, with its value.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹'
+      const sup = (k: number) => `${k < 0 ? '⁻' : ''}${String(Math.abs(k)).split('').map((d) => SUP[Number(d)]).join('')}`
+      for (let i = 0; i < 160; i++) {
+        const kind = ri(r, 1, 3)
+        if (kind === 1) { const b = ri(r, 2, 6), e = ri(r, 2, 4); c.push([`${b}${sup(e)}`, String(b ** e)]) }
+        else if (kind === 2) { const b = ri(r, 2, 6), e = ri(r, 1, 3); c.push([`${b}${sup(-e)}`, fmtFrac(fr(1, b ** e))]) }
+        else { const k = pick(r, [2, 3]), m = ri(r, 1, 3), base = ri(r, 2, k === 2 ? 11 : 4); c.push([`${base ** k}^(${m}/${k})`, String(base ** m)]) }
+      }
+      return draw(r, c, n)
+    },
+  },
+  {
+    id: 'log-values', name: 'Logarithms and their values', blurb: 'Pair each logarithm with the number it equals.',
+    make: (r, n) => {
+      const SUB = '₀₁₂₃₄₅₆₇₈₉'
+      const sub = (k: number) => String(k).split('').map((d) => SUB[Number(d)]).join('')
+      const c: [string, string][] = []
+      for (let i = 0; i < 160; i++) {
+        const b = pick(r, [2, 3, 4, 5, 6, 10]), k = ri(r, -3, 5)
+        if (b ** Math.abs(k) > 5000) continue
+        const arg = k >= 0 ? String(b ** k) : `1/${b ** -k}`
+        c.push([`log${sub(b)} ${k >= 0 ? arg : `(${arg})`}`, `${k < 0 ? '−' : ''}${Math.abs(k)}`])
       }
       return draw(r, c, n)
     },

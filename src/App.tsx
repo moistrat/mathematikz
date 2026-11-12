@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Learn } from './pages/Learn'
 import { Practice } from './pages/Practice'
-import { Explore } from './pages/Explore'
-import { Games } from './pages/Games'
+const Explore = lazy(() => import('./pages/Explore').then((m) => ({ default: m.Explore })))
+const Games = lazy(() => import('./pages/Games').then((m) => ({ default: m.Games })))
 
 type Page = 'learn' | 'practice' | 'games' | 'explore'
 const TABS: { id: Page; label: string }[] = [
@@ -45,8 +45,10 @@ export default function App() {
       <main>
         {route.page === 'learn' && <Learn lessonId={route.arg} />}
         {route.page === 'practice' && <Practice arg={route.arg} />}
-        {route.page === 'games' && <Games arg={route.arg} />}
-        {route.page === 'explore' && <Explore />}
+        <Suspense fallback={<div className="page"><p className="muted">Loading…</p></div>}>
+          {route.page === 'games' && <Games arg={route.arg} />}
+          {route.page === 'explore' && <Explore />}
+        </Suspense>
       </main>
     </>
   )
