@@ -21,6 +21,8 @@ Seven units are built.
 
 - **Unit 8, complex numbers and vectors**: 5 lessons, 4 interactive figures (Argand diagram, roots of a number, 2D dot-product lab, 3D cross-product lab), about 40 generators, and 3 more match-up decks.
 
+- **Unit 9, limits and derivatives**: 5 lessons, 6 interactive figures (approaching a limit, secant to tangent, function and derivative, circle tangent, open-box optimisation, sliding ladder), about 60 generators with a formula checker, and 3 more match-up decks.
+
 Explore still only has the unit-circle tools. A Games page (Sprint, Survival, Match-up, Root hunter) is live.
 
 ## Pages
@@ -49,8 +51,8 @@ Each unit follows the same recipe: lessons with worked examples, a table or form
 | 6 | Trigonometry, continued: right triangles, sine and cosine rules, identities, graphs, general solutions | built |
 | 7 | Sequences, series and the binomial theorem | built |
 | 8 | Complex numbers and vectors | built |
-| 9 | Limits and derivatives: definition, rules, chain rule, implicit, applications (optimisation, related rates) | next |
-| 10 | Integrals: antiderivatives, substitution, by parts, partial fractions, areas and volumes | planned |
+| 9 | Limits and derivatives: definition, rules, chain rule, implicit, applications (optimisation, related rates) | built |
+| 10 | Integrals: antiderivatives, substitution, by parts, partial fractions, areas and volumes | next |
 | 11 | Series and advanced calculus: convergence tests, Taylor series, multivariable, partial derivatives, multiple integrals | planned |
 | 12 | Differential equations, linear algebra, probability and statistics | planned |
 

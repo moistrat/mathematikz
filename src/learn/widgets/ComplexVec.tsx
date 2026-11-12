@@ -13,7 +13,7 @@ const cxText = (re: number, im: number, d = 2) => {
 const deg = (r: number) => (r * 180) / Math.PI
 
 /** an arrow from (x1,y1) to (x2,y2) in screen coordinates */
-function Arrow({ x1, y1, x2, y2, cls = '', label, dx = 6, dy = -6 }: { x1: number; y1: number; x2: number; y2: number; cls?: string; label?: string; dx?: number; dy?: number }) {
+export function Arrow({ x1, y1, x2, y2, cls = '', label, dx = 6, dy = -6 }: { x1: number; y1: number; x2: number; y2: number; cls?: string; label?: string; dx?: number; dy?: number }) {
   const L = Math.hypot(x2 - x1, y2 - y1)
   if (L < 1) return null
   const ux = (x2 - x1) / L, uy = (y2 - y1) / L, h = Math.min(11, L * 0.5)
@@ -27,10 +27,10 @@ function Arrow({ x1, y1, x2, y2, cls = '', label, dx = 6, dy = -6 }: { x1: numbe
   )
 }
 
-const W = 640, H = 340
+export const W = 640, H = 340
 
 /** the plane with a square grid, scaled so that `reach` units fit in half the height */
-function Plane({ reach, label, children }: { reach: number; label: string; children: (p: (x: number, y: number) => [number, number], unit: number) => React.ReactNode }) {
+export function Plane({ reach, label, axes = ['Re', 'Im'], children }: { reach: number; label: string; axes?: [string, string]; children: (p: (x: number, y: number) => [number, number], unit: number) => React.ReactNode }) {
   const unit = (H / 2 - 12) / reach
   const p = (x: number, y: number): [number, number] => [W / 2 + x * unit, H / 2 - y * unit]
   const step = reach > 14 ? 5 : reach > 7 ? 2 : 1
@@ -45,8 +45,8 @@ function Plane({ reach, label, children }: { reach: number; label: string; child
       <line x1={W / 2} x2={W / 2} y1={0} y2={H} className="w-axis" />
       {xs.filter((t) => t !== 0).map((t) => <text key={`tx${t}`} x={p(t, 0)[0]} y={H / 2 + 13} textAnchor="middle" className="w-t sm">{t < 0 ? `${MINUS}${-t}` : t}</text>)}
       {ys.filter((t) => t !== 0).map((t) => <text key={`ty${t}`} x={W / 2 + 5} y={p(0, t)[1] - 3} className="w-t sm">{t < 0 ? `${MINUS}${-t}` : t}</text>)}
-      <text x={W - 28} y={H / 2 - 6} className="w-t sm">Re</text>
-      <text x={W / 2 + 6} y={12} className="w-t sm">Im</text>
+      <text x={W - 28} y={H / 2 - 6} className="w-t sm">{axes[0]}</text>
+      <text x={W / 2 + 6} y={12} className="w-t sm">{axes[1]}</text>
       {children(p, unit)}
     </svg>
   )

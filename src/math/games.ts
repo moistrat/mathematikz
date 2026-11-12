@@ -6,6 +6,7 @@ import { fmtFrac, fr, parsePoly, fmtPoly, pretty, pMul } from './algebra'
 import {
   cosExact, fmtDeg, fmtPi, fmtSurd, sinExact, SPECIAL_DEGREES, tanExact,
 } from './exact'
+import { showF } from './calculus'
 import { mulberry, pick, Rng, shuffle } from './rng'
 import { fmtIntervals, fmtSet, IntervalSet } from './solve'
 import { COMPOUND, IDENTITIES } from './trigQuestions'
@@ -32,6 +33,41 @@ function draw(r: Rng, candidates: [string, string][], n: number): Pair[] {
 }
 
 const ANGLES = SPECIAL_DEGREES.filter((d) => d > 0 && d <= 360)
+
+
+/* Unit 9 pools: ASCII pairs, so the tests can check each one numerically */
+export function derivativePool(r: Rng): [string, string][] {
+  const out: [string, string][] = []
+  for (let i = 0; i < 60; i++) {
+    const a = ri(r, 2, 9), n = ri(r, 2, 6), k = ri(r, 2, 6), b = ri(r, 1, 6)
+    out.push([`${a}x^${n}`, `${a * n}x^${n - 1}`.replace(/x\^1$/, 'x')])
+    out.push([`sin(${k}x)`, `${k}cos(${k}x)`], [`cos(${k}x)`, `-${k}sin(${k}x)`], [`e^(${k}x)`, `${k}e^(${k}x)`], [`ln(${k}x+${b})`, `${k}/(${k}x+${b})`])
+    out.push([`(x+${b})^${n}`, `${n}(x+${b})^${n - 1}`.replace(/\^1$/, '')], [`${a}/x`, `-${a}/x^2`], [`x*e^x`, `(x+1)*e^x`], [`x*sin(x)`, `sin(x)+x*cos(x)`], [`${a}sqrt(x)`, `${a}/(2sqrt(x))`], [`tan(${k}x)`, `${k}sec(${k}x)^2`])
+  }
+  return out
+}
+export function limitPool(r: Rng): [string, string, string][] {
+  const out: [string, string, string][] = []
+  const g = (x: number, y: number): number => (y === 0 ? Math.abs(x) : g(y, x % y))
+  for (let i = 0; i < 80; i++) {
+    const a = ri(r, 1, 9), k = ri(r, 1, 7), m = ri(r, 1, 7), c = ri(r, 2, 6)
+    out.push([`(x^2-${a * a})/(x-${a})`, String(2 * a), `x → ${a}`])
+    const d = g(k, m); out.push([`sin(${k === 1 ? '' : k}x)/(${m === 1 ? '' : m}x)`, m / d === 1 ? String(k / d) : `${k / d}/${m / d}`, 'x → 0'])
+    out.push([`(e^(${k === 1 ? '' : k}x)-1)/x`, String(k), 'x → 0'])
+    out.push([`(${c}x^2+x)/(x^2+${a})`, String(c), 'x → ∞'], [`(${c}x+${a})/(x^2+1)`, '0', 'x → ∞'], [`(${c}x^2+${a})/(${m}x^2-1)`, m / g(c, m) === 1 ? String(c / g(c, m)) : `${c / g(c, m)}/${m / g(c, m)}`, 'x → ∞'])
+  }
+  return out
+}
+export function tangentPool(r: Rng): [string, string][] {
+  const out: [string, string][] = []
+  for (let i = 0; i < 80; i++) {
+    const a = ri(r, 1, 3) * (r() < 0.4 ? -1 : 1), p = ri(r, 1, 4), q = ri(r, -6, 6), c3 = ri(r, 1, 2)
+    // f = c3 x^3 + p x^2 + q x, f' = 3 c3 x^2 + 2 p x + q
+    out.push([`${c3 === 1 ? '' : c3}x^3+${p === 1 ? '' : p}x^2${q === 0 ? '' : q > 0 ? `+${q}x` : `${q}x`} at x=${a}`, String(3 * c3 * a * a + 2 * p * a + q)])
+  }
+  return out
+}
+const tidy = (t: string) => showF(t).replace(/−/g, '−')
 
 export const DECKS: Deck[] = [
   {
@@ -260,6 +296,18 @@ export const DECKS: Deck[] = [
       }
       return draw(r, c, n)
     },
+  },
+  {
+    id: 'derivative-pairs', name: 'Functions and their derivatives', blurb: 'Pair each function with its derivative.',
+    make: (r, n) => draw(r, derivativePool(r).map(([f, d]) => [tidy(f), tidy(d)] as [string, string]), n),
+  },
+  {
+    id: 'limit-values', name: 'Limits and their values', blurb: 'Pair each limit with the number it equals.',
+    make: (r, n) => draw(r, limitPool(r).map(([f, v, at]) => [`${at}:  ${tidy(f)}`, v] as [string, string]), n),
+  },
+  {
+    id: 'tangent-gradients', name: 'Gradients of tangents', blurb: 'Pair each curve and point with the gradient of the tangent there.',
+    make: (r, n) => draw(r, tangentPool(r).map(([f, v]) => [`Gradient of y = ${tidy(f)}`, v.replace('-', '−')] as [string, string]), n),
   },
 ]
 

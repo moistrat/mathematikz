@@ -1,6 +1,7 @@
 import { WidgetId } from '../types'
 import { CubicRoots, ExprLab, Holes, RatGraph } from './Algebra'
 import { Converter, Radians } from './Angles'
+import { BoxOpt, DerivGraph, ImplicitLab, Ladder, LimitLab, SecantLab } from './CalculusLab'
 import { Argand, CrossLab, RootsUnity, VectorLab } from './ComplexVec'
 import { Astc, Reference, Triangles, UnitCircle } from './Circle'
 import { GraphSolve, Inverse } from './Equations'
@@ -50,5 +51,11 @@ export function Widget({ id }: { id: WidgetId }) {
     case 'rootsunity': return <RootsUnity />
     case 'vectorlab': return <VectorLab />
     case 'crosslab': return <CrossLab />
+    case 'limitlab': return <LimitLab />
+    case 'secantlab': return <SecantLab />
+    case 'derivgraph': return <DerivGraph />
+    case 'implicitlab': return <ImplicitLab />
+    case 'boxopt': return <BoxOpt />
+    case 'ladder': return <Ladder />
   }
 }

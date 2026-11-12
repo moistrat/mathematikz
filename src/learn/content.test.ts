@@ -12,12 +12,12 @@ describe('course content', () => {
     for (const l of LESSONS) {
       expect(l.goals.length, l.id).toBeGreaterThanOrEqual(2)
       expect(l.blocks.filter((b) => b.t === 'check').length, l.id).toBeGreaterThanOrEqual(3)
-      expect(l.blocks.filter((b) => ['h', 'p', 'list', 'callout', 'example'].includes(b.t)).length, l.id).toBeGreaterThanOrEqual(8)
+      expect(l.blocks.filter((b) => ['h', 'p', 'list', 'callout', 'example'].includes(b.t)).length, l.id).toBeGreaterThanOrEqual(9)
       expect(l.blocks.filter((b) => b.t === 'widget').length, l.id).toBeGreaterThanOrEqual(1)
       expect(l.blocks.filter((b) => b.t === 'example').length, l.id).toBeGreaterThanOrEqual(2)
     }
-    expect(UNITS.length).toBeGreaterThanOrEqual(8)
-    expect(LESSONS.length).toBeGreaterThanOrEqual(42)
+    expect(UNITS.length).toBeGreaterThanOrEqual(9)
+    expect(LESSONS.length).toBeGreaterThanOrEqual(47)
   })
   it('check questions are well formed', () => {
     for (const l of LESSONS) for (const b of l.blocks) {
@@ -37,6 +37,6 @@ describe('course content', () => {
   })
   it('every widget used in a lesson exists', async () => {
     const used = new Set(LESSONS.flatMap((l) => l.blocks.flatMap((b) => (b.t === 'widget' ? [b.id] : []))))
-    expect([...used].sort()).toEqual(['ambiguous', 'argand', 'astc', 'asymptotes', 'composer', 'converter', 'cobweb', 'crosslab', 'cubicroots', 'domainrange', 'explog', 'exprlab', 'graphsolve', 'holes', 'identity', 'inverse', 'invgraph', 'lineargraph', 'loglab', 'polysketch', 'quadlab', 'rootsunity', 'radians', 'radicalfactor', 'partialsums', 'pascal', 'ratgraph', 'reference', 'rtri', 'seqlab', 'signchart', 'systemslab', 'transform', 'triangles', 'trigsolve', 'unitcircle', 'vectorlab', 'wave'].sort())
+    expect([...used].sort()).toEqual(['ambiguous', 'argand', 'astc', 'boxopt', 'asymptotes', 'composer', 'converter', 'cobweb', 'crosslab', 'cubicroots', 'derivgraph', 'domainrange', 'explog', 'exprlab', 'graphsolve', 'holes', 'identity', 'implicitlab', 'inverse', 'invgraph', 'ladder', 'limitlab', 'lineargraph', 'loglab', 'polysketch', 'quadlab', 'rootsunity', 'radians', 'radicalfactor', 'partialsums', 'pascal', 'ratgraph', 'reference', 'rtri', 'secantlab', 'seqlab', 'signchart', 'systemslab', 'transform', 'triangles', 'trigsolve', 'unitcircle', 'vectorlab', 'wave'].sort())
   })
 })

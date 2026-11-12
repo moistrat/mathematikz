@@ -11,6 +11,8 @@ const TRIG: Record<string, (x: number) => number> = {
   sin: Math.sin, cos: Math.cos, tan: Math.tan, sec: (x) => 1 / Math.cos(x), csc: (x) => 1 / Math.sin(x), cot: (x) => 1 / Math.tan(x),
 }
 
+const WORDS = ['theta', 'degrees', 'radians', 'asin', 'acos', 'atan', 'sqrt', 'cbrt', 'root', 'sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'exp', 'log', 'rad', 'deg', 'ln', 'pi']
+
 function tokenize(src: string): Tok[] {
   const s = src
     .toLowerCase()
@@ -39,7 +41,14 @@ function tokenize(src: string): Tok[] {
     } else if (/[a-z]/.test(c)) {
       let j = i
       while (j < s.length && /[a-z]/.test(s[j])) j++
-      out.push({ t: 'id', v: s.slice(i, j) })
+      // a run of letters is one word, or else several one-letter names written together (xe^x, 2xln(x))
+      const run = s.slice(i, j)
+      for (let k = 0; k < run.length;) {
+        const word = WORDS.find((wd) => run.startsWith(wd, k))
+        const len = word ? word.length : 1
+        out.push({ t: 'id', v: run.slice(k, k + len) })
+        k += len
+      }
       i = j
     } else if ('+-*/()^'.includes(c)) { out.push({ t: 'op', v: c }); i++ }
     else throw new ParseError(`unexpected "${c}"`)
@@ -114,14 +123,17 @@ export function evaluate(src: string, env: Env = {}): number {
     }
     if (k.v in env) return env[k.v]
     if (k.v === 'e') return Math.E
-    if (k.v === 'cbrt') return Math.cbrt(power())
+    // a bracketed argument ends at its bracket, so ln(x)^2 means (ln x)^2; without brackets, ln x^2 means ln(x^2)
+    const arg = () => (isOp('(') ? atom() : power())
+    if (k.v === 'asin' || k.v === 'acos' || k.v === 'atan') { const v = arg(); return k.v === 'asin' ? Math.asin(v) : k.v === 'acos' ? Math.acos(v) : Math.atan(v) }
+    if (k.v === 'cbrt') return Math.cbrt(arg())
     if (k.v === 'ln' || k.v === 'log' || k.v === 'exp') {
-      const v = power()
+      const v = arg()
       return k.v === 'ln' ? Math.log(v) : k.v === 'log' ? Math.log10(v) : Math.exp(v)
     }
     if (k.v === 'sqrt' || k.v === 'root') {
       if (isOp('-')) throw new ParseError('sqrt of negative')
-      const v = power()
+      const v = arg()
       if (v < 0) throw new ParseError('sqrt of negative')
       return Math.sqrt(v)
     }

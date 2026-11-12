@@ -1,3 +1,4 @@
+import { isDerivative, numDeriv, numLimit } from './calculus'
 import { describe, expect, it } from 'vitest'
 import { evalExpr, parseRat, rEq } from './algebra'
 import { evaluate } from './parse'
@@ -266,6 +267,35 @@ describe('unit 8 decks', () => {
         const [p, q] = a.text.split(' × ').map(vec)
         expect([p[1] * q[2] - p[2] * q[1], p[2] * q[0] - p[0] * q[2], p[0] * q[1] - p[1] * q[0]].map((e) => e + 0), a.text).toEqual(vec(b.text))
       }
+    }
+  })
+})
+
+describe('unit 9 decks', () => {
+  it('derivative pairs are right', async () => {
+    const { derivativePool } = await import('./games')
+    const { mulberry } = await import('./rng')
+    for (let sd = 1; sd <= 6; sd++) for (const [f, d] of derivativePool(mulberry(sd))) expect(isDerivative(f, d, 1, /sqrt|ln/.test(f)), `${f} -> ${d}`).toBe(true)
+  })
+  it('limits are right', async () => {
+    const { limitPool } = await import('./games')
+    const { mulberry } = await import('./rng')
+    const { evaluate } = await import('./parse')
+    for (let sd = 1; sd <= 6; sd++) for (const [f, v, at] of limitPool(mulberry(sd))) {
+      const want = v.includes('/') ? v.split('/').map(Number).reduce((x, y) => x / y) : Number(v)
+      const a = at.endsWith('∞') ? 0 : Number(at.slice(4))
+      const got = numLimit(f, a, at.endsWith('∞') ? 'inf' : 'both')
+      expect(got, `${at} ${f}`).not.toBeNull()
+      expect(Math.abs((got as number) - want), `${at} ${f} = ${v}`).toBeLessThan(3e-3 * (1 + Math.abs(want)))
+      void evaluate
+    }
+  })
+  it('tangent gradients are right', async () => {
+    const { tangentPool } = await import('./games')
+    const { mulberry } = await import('./rng')
+    for (let sd = 1; sd <= 6; sd++) for (const [t, v] of tangentPool(mulberry(sd))) {
+      const [f, at] = t.split(' at x=')
+      expect(Math.abs(numDeriv(f, Number(at)) - Number(v)), t).toBeLessThan(1e-2)
     }
   })
 })

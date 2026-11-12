@@ -7,6 +7,8 @@ import { AlgSpec, checkAlgebra } from './algebra'
 import { ALG_GENS } from './algebraQuestions'
 import { EQ_GENS } from './equationQuestions'
 import { FN_GENS } from './functionQuestions'
+import { checkCalc, CalcSpec } from './calculus'
+import { CALC_GENS } from './calcQuestions'
 import { CX_GENS } from './cxQuestions'
 import { SEQ_GENS } from './seqQuestions'
 import { TRIG2_GENS } from './trigQuestions'
@@ -46,6 +48,8 @@ export interface Question {
   alg?: AlgSpec
   /** present for trigonometric expressions and identities */
   trig?: TrigSpec
+  /** present for questions whose answer is a formula in x, such as a derivative */
+  calc?: CalcSpec
   /** ineq: the solution set the student's inequality or interval must equal */
   iv?: IntervalSet
   /** complex: the complex number(s) the student must give, each in the form a + bi (any order for several) */
@@ -592,7 +596,7 @@ const TRIG_GENS: Gen[] = [
   } },
 ]
 
-const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS, ...SEQ_GENS, ...CX_GENS]
+const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS, ...SEQ_GENS, ...CX_GENS, ...CALC_GENS]
 
 /* ------------------------------------------------------------------ public API */
 
@@ -626,6 +630,7 @@ export function checkAnswer(q: Question, text: string): Check {
   const raw = text.trim()
   if (!raw) return { ok: false, invalid: true, note: 'Type an answer first.' }
   if (q.trig) return checkTrig(q.trig, raw)
+  if (q.calc) return checkCalc(q.calc, raw)
   if (q.alg) return checkAlgebra(q.alg, raw)
   if (q.kind === 'ineq') return checkSet(q, raw)
   if (q.kind === 'word') return checkWord(q, raw)
