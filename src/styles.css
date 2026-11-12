@@ -378,3 +378,5 @@ p.warn { margin: .6rem 0 0; }
 .chip-group { display: inline-flex; gap: .25rem; padding: .25rem; border: 1px dashed var(--accent); border-radius: 8px; }
 .chip-group.out .chip { background: color-mix(in srgb, var(--accent) 22%, var(--surface-2)); border-color: var(--accent); }
 .chip.stay { color: var(--text-dim); }
+.mult-row { display: grid; gap: .35rem; }
+.wsvg .w-e.dim { fill: var(--text-faint); opacity: .7; }

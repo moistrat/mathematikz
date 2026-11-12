@@ -189,8 +189,17 @@ function bound(text: string): number {
   try { return evaluate(t) } catch (e) { if (e instanceof ParseError) throw new SetError(`Could not read "${t}".`); throw e }
 }
 
+/** every real number except the given points */
+const except = (pts: number[]): IntervalSet => complement(pts.map((v) => ({ lo: v, hi: v, loIncl: true, hiIncl: true })))
+
 function readPiece(piece: string): IntervalSet {
   const p = piece.trim()
+  // x != 2  or  2 != x  ("x ≠ 2" is normalised to "!=")
+  const ne = /^([a-z])\s*!=\s*(.+)$/i.exec(p) ?? /^(.+?)\s*!=\s*([a-z])$/i.exec(p)
+  if (ne) return except([bound(/^[a-z]$/i.test(ne[1]) ? ne[2] : ne[1])])
+  // all real numbers except 2, -2
+  const ex = /^(?:all (?:real )?numbers?|all reals?|r|ℝ)\s+except\s+(?:x\s*=\s*)?(.+)$/i.exec(p)
+  if (ex) return except(ex[1].split(/\s*(?:,|;|\band\b)\s*/).map((q) => bound(q.replace(/^x\s*=\s*/i, ''))))
   // interval notation: (a, b] ...
   const iv = /^([\[(])\s*([^,]+?)\s*,\s*([^,]+?)\s*([\])])$/.exec(p)
   if (iv) {
@@ -242,13 +251,16 @@ function one(op: Op, c: number, varLeft: boolean): IntervalSet {
 /** Parse "x < -2 or x >= 3", "(-inf,-2) U [3,inf)", "no solution", "all real numbers" ... */
 export function parseSet(raw: string): IntervalSet {
   const t = raw.trim()
-    .replace(/[−–—]/g, '-').replace(/≤/g, '<=').replace(/≥/g, '>=').replace(/⩽/g, '<=').replace(/⩾/g, '>=')
+    .replace(/[−–—]/g, '-').replace(/≤/g, '<=').replace(/≥/g, '>=').replace(/⩽/g, '<=').replace(/⩾/g, '>=').replace(/≠/g, '!=')
     .replace(/\s+/g, ' ')
   if (!t) throw new SetError('Type an answer first.')
   if (/^(no (real )?solutions?|none|∅|empty( set)?|dne)$/i.test(t)) return []
   if (/^(all (real )?numbers?|all reals?|any (real )?number|every (real )?number|r|ℝ|\(-(inf|infinity|∞), ?(inf|infinity|∞)\))$/i.test(t)) return WHOLE_LINE
-  const pieces = t.split(/\s+or\s+|\s*∪\s*|(?<=[\])])\s*u\s*(?=[[(])|\s*,\s*(?=[a-z0-9.+\-(]*\s*(?:<|>))/i)
-  return normalise(pieces.flatMap((p) => readPiece(p.replace(/^x\s*∈\s*/i, ''))))
+  // "x != 2, x != -2" lists excluded values, so its parts combine with "and"
+  if (/^[a-z]\s*!=\s*[^,]+(\s*,\s*[a-z]\s*!=\s*[^,]+)+$/i.test(t)) return parseSet(t.replace(/\s*,\s*/g, ' and '))
+  const pieces = t.split(/\s+or\s+|\s*∪\s*|(?<=[\])])\s*u\s*(?=[[(])|\s*,\s*(?=[a-z0-9.+\-(]*\s*(?:<|>|!=))/i)
+  // inside one piece, "and" means the overlap: x != 2 and x != -2
+  return normalise(pieces.flatMap((p) => p.split(/\s+and\s+/i).map((q) => readPiece(q.replace(/^x\s*∈\s*/i, ''))).reduce((acc, cur) => intersect(acc, cur))))
 }
 
 /* ------------------------------------------------------------------ linear systems */

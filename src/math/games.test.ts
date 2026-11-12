@@ -89,6 +89,58 @@ describe('unit 4 decks', () => {
   })
 })
 
+describe('unit 5 decks', () => {
+  it('each linear function pairs with its true inverse', () => {
+    for (let s = 1; s <= 80; s++) {
+      const board = buildBoard('inverse-pairs', 6, s * 9)
+      for (let p = 0; p < 6; p++) {
+        const [a, b] = board.filter((t) => t.pair === p).sort((x, y) => x.key.localeCompare(y.key))
+        const f = ascii(a.text.replace('f(x) = ', '')), g = ascii(b.text)
+        for (const x of [-3, 0.5, 2, 7]) {
+          const inner = evalExpr(f, { x })
+          expect(Math.abs(evalExpr(g.replace(/x/g, `(${inner})`), {}) - x), `${a.text} vs ${b.text}`).toBeLessThan(1e-9)
+        }
+      }
+    }
+  })
+  it('each transformation pairs with its description', () => {
+    // an independent translator from the description to the equation, checked numerically on f(x) = x^2 + x
+    const f = (x: number) => x * x + x
+    const fromWords = (w: string): ((x: number) => number) => {
+      let m: RegExpExecArray | null
+      if ((m = /^shift right (\d+)$/.exec(w))) return (x) => f(x - Number(m![1]))
+      if ((m = /^shift left (\d+)$/.exec(w))) return (x) => f(x + Number(m![1]))
+      if ((m = /^shift up (\d+)$/.exec(w))) return (x) => f(x) + Number(m![1])
+      if ((m = /^shift down (\d+)$/.exec(w))) return (x) => f(x) - Number(m![1])
+      if ((m = /^stretch vertically, factor (\d+)$/.exec(w))) return (x) => Number(m![1]) * f(x)
+      if ((m = /^squeeze horizontally, factor (\d+)$/.exec(w))) return (x) => f(Number(m![1]) * x)
+      if (w === 'reflect in the x-axis') return (x) => -f(x)
+      if (w === 'reflect in the y-axis') return (x) => f(-x)
+      throw new Error(w)
+    }
+    const fromEq = (e: string): ((x: number) => number) => {
+      const body = e.replace('y = ', '').replace(/−/g, '-')
+      return (x) => {
+        let m: RegExpExecArray | null
+        if ((m = /^f\(x ([+-]) (\d+)\)$/.exec(body))) return f(x + (m[1] === '+' ? 1 : -1) * Number(m[2]))
+        if ((m = /^f\(x\) ([+-]) (\d+)$/.exec(body))) return f(x) + (m[1] === '+' ? 1 : -1) * Number(m[2])
+        if ((m = /^(\d+)f\(x\)$/.exec(body))) return Number(m[1]) * f(x)
+        if ((m = /^f\((\d+)x\)$/.exec(body))) return f(Number(m[1]) * x)
+        if (body === '-f(x)') return -f(x)
+        if (body === 'f(-x)') return f(-x)
+        throw new Error(e)
+      }
+    }
+    for (let s = 1; s <= 80; s++) {
+      const board = buildBoard('transform-words', 6, s * 11)
+      for (let p = 0; p < 6; p++) {
+        const [a, b] = board.filter((t) => t.pair === p).sort((x, y) => x.key.localeCompare(y.key))
+        for (const x of [-2, 0, 1.5, 3]) expect(fromEq(a.text)(x), `${a.text} vs ${b.text}`).toBeCloseTo(fromWords(b.text)(x))
+      }
+    }
+  })
+})
+
 describe('scoring', () => {
   it('rewards streaks and rises in level', () => {
     expect(sprintScore(10, 2)).toBe(100)

@@ -92,7 +92,7 @@ export function pairSpec(prompt: string, x: Frac, y: Frac, hint: string, expl: s
   }
 }
 
-function ineqSpec(prompt: string, set: IntervalSet, v: string, hint: string, expl: string[], ends: Ex[] = [], holds?: (x: number) => boolean): Spec {
+export function ineqSpec(prompt: string, set: IntervalSet, v: string, hint: string, expl: string[], ends: Ex[] = [], holds?: (x: number) => boolean): Spec {
   const find = (x: number) => ends.find((e) => Math.abs(e.val - x) < 1e-9)
   const disp = (x: number) => find(x)?.disp ?? ratText(x)
   const inp = (x: number) => find(x)?.inp ?? ratText(x).replace(/−/g, '-')
@@ -106,7 +106,7 @@ function ineqSpec(prompt: string, set: IntervalSet, v: string, hint: string, exp
   }
 }
 
-const roots2 = (a: number, b: number, c: number) => quadRoots(a, b, c)
+export const roots2 = (a: number, b: number, c: number) => quadRoots(a, b, c)
 
 /* ------------------------------------------------------------------ 1. linear equations */
 
@@ -236,7 +236,7 @@ function shuffleLetters(r: Rng, n: number): string[] {
 
 /* ------------------------------------------------------------------ 2. solving quadratics */
 
-const VAR = (r: Rng) => pick(r, ['x', 'x', 'x', 'x', 't', 'n', 'y'])
+export const VAR = (r: Rng) => pick(r, ['x', 'x', 'x', 'x', 't', 'n', 'y'])
 
 function quadEq(lhs: string, rhs: string, v: string) {
   return (x: number) => Math.abs(evalExpr(lhs, { [v]: x }) - evalExpr(rhs, { [v]: x })) < 1e-7
@@ -485,13 +485,13 @@ const FORMULA: Gen[] = [
 
 /* ------------------------------------------------------------------ 4. inequalities */
 
-type Op = '<' | '<=' | '>' | '>='
-const OPTEXT: Record<Op, string> = { '<': '<', '<=': '≤', '>': '>', '>=': '≥' }
-const flip = (o: Op): Op => (o === '<' ? '>' : o === '>' ? '<' : o === '<=' ? '>=' : '<=')
-const randOp = (r: Rng): Op => pick(r, ['<', '<=', '>', '>='] as Op[])
+export type Op = '<' | '<=' | '>' | '>='
+export const OPTEXT: Record<Op, string> = { '<': '<', '<=': '≤', '>': '>', '>=': '≥' }
+export const flip = (o: Op): Op => (o === '<' ? '>' : o === '>' ? '<' : o === '<=' ? '>=' : '<=')
+export const randOp = (r: Rng): Op => pick(r, ['<', '<=', '>', '>='] as Op[])
 
 /** the region-by-region test lines used by every sign-chart explanation */
-function regionSteps(f: (x: number) => number, crit: number[], label: (x: number) => string, v = 'x'): string[] {
+export function regionSteps(f: (x: number) => number, crit: number[], label: (x: number) => string, v = 'x'): string[] {
   const pts = [...crit].sort((a, b) => a - b)
   const out: string[] = []
   const bounds = [-Infinity, ...pts, Infinity]

@@ -6,13 +6,14 @@ import {
 import { AlgSpec, checkAlgebra } from './algebra'
 import { ALG_GENS } from './algebraQuestions'
 import { EQ_GENS } from './equationQuestions'
+import { FN_GENS } from './functionQuestions'
 import { POW_GENS } from './powerQuestions'
 import { complement, IntervalSet, normalise, parseSet, SetError, setsEqual } from './solve'
 import { evaluate, parseList, saysUndefined, stripLead } from './parse'
 import { radicalFormProblem } from './radicals'
 import { mulberry, pick, Rng } from './rng'
 
-export type Kind = 'value' | 'approx' | 'set' | 'pair' | 'alg' | 'ineq'
+export type Kind = 'value' | 'approx' | 'set' | 'pair' | 'alg' | 'ineq' | 'word'
 
 export interface Question {
   id: string
@@ -40,6 +41,8 @@ export interface Question {
   alg?: AlgSpec
   /** ineq: the solution set the student's inequality or interval must equal */
   iv?: IntervalSet
+  /** word: the accepted spellings of the answer (lower case); the first is the one shown */
+  words?: string[]
   /** value answers: must also be in simplest radical form (no square factor under the root, no root in a denominator) */
   simplest?: boolean
   /** tests only: typed forms that equal the answer but must be rejected (for example sqrt(72) when 6sqrt(2) is wanted) */
@@ -580,7 +583,7 @@ const TRIG_GENS: Gen[] = [
   } },
 ]
 
-const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS]
+const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS]
 
 /* ------------------------------------------------------------------ public API */
 
@@ -615,6 +618,7 @@ export function checkAnswer(q: Question, text: string): Check {
   if (!raw) return { ok: false, invalid: true, note: 'Type an answer first.' }
   if (q.alg) return checkAlgebra(q.alg, raw)
   if (q.kind === 'ineq') return checkSet(q, raw)
+  if (q.kind === 'word') return checkWord(q, raw)
   const NF = q.pad.alg ? NOTE_FORMAT_ALG : NOTE_FORMAT
   const NE = q.pad.alg ? 'Give an exact fraction such as 1/3, not a decimal.' : NOTE_EXACT
 
@@ -669,4 +673,15 @@ function checkSet(q: Question, raw: string): Check {
   if (setsEqual(got, complement(want))) return { ok: false, note: 'That is the opposite region. Test a number from each region in the original inequality.' }
   if (sameEnds) return { ok: false, note: 'Right boundary values. Now check each end: it is included (≤, ≥, square bracket) only when the boundary itself satisfies the inequality, and never when it makes a denominator zero.' }
   return { ok: false }
+}
+
+const plain = (t: string) => t.toLowerCase().replace(/[^a-z0-9+\- ]/g, ' ').replace(/\s+/g, ' ').trim()
+
+/** A one-word (or short phrase) answer such as even / odd / neither. */
+function checkWord(q: Question, raw: string): Check {
+  const given = plain(raw)
+  const ok = (q.words ?? []).some((w) => plain(w) === given)
+  if (ok) return { ok: true }
+  const options = q.pad.extra?.length ? ` Choose one of: ${q.pad.extra.join(', ')}.` : ''
+  return { ok: false, note: options.trim() || undefined }
 }

@@ -119,7 +119,7 @@ export function evaluate(src: string): number {
   return v
 }
 
-const UNDEFINED = /^(undefined|und|dne|d\.n\.e\.?|does not exist|doesn'?t exist|not defined|no value|infinity|inf|∞)$/
+const UNDEFINED = /^(undefined|und|dne|d\.n\.e\.?|does not exist|doesn'?t exist|not defined|no value|infinity|inf|∞|none|no (horizontal |oblique |vertical )?asymptotes?)$/
 
 export const saysUndefined = (text: string) => UNDEFINED.test(text.trim().toLowerCase())
 

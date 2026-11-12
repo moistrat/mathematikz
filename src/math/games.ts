@@ -133,6 +133,34 @@ export const DECKS: Deck[] = [
       return draw(r, c, n)
     },
   },
+  {
+    id: 'inverse-pairs', name: 'Functions and their inverses', blurb: 'Pair each linear function with its inverse.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      for (let i = 0; i < 160; i++) {
+        const a = pick(r, [2, 3, 4, 5, -2, -3]), b = ri(r, -9, 9)
+        if (!b) continue
+        const f = `f(x) = ${a === -1 ? '−' : a}x ${b < 0 ? '−' : '+'} ${Math.abs(b)}`
+        const g = `(x ${-b < 0 ? '−' : '+'} ${Math.abs(b)})/${a < 0 ? `(${'−'}${-a})` : a}`
+        c.push([f, g])
+      }
+      return draw(r, c, n)
+    },
+  },
+  {
+    id: 'transform-words', name: 'Transformations in words', blurb: 'Pair each change to y = f(x) with what it does to the graph.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      for (let i = 0; i < 160; i++) {
+        const k = ri(r, 1, 7), kind = ri(r, 1, 8)
+        const [a, b]: [string, string] = kind === 1 ? [`y = f(x − ${k})`, `shift right ${k}`] : kind === 2 ? [`y = f(x + ${k})`, `shift left ${k}`] : kind === 3 ? [`y = f(x) + ${k}`, `shift up ${k}`]
+          : kind === 4 ? [`y = f(x) − ${k}`, `shift down ${k}`] : kind === 5 ? [`y = ${k + 1}f(x)`, `stretch vertically, factor ${k + 1}`] : kind === 6 ? [`y = f(${k + 1}x)`, `squeeze horizontally, factor ${k + 1}`]
+            : kind === 7 ? ['y = −f(x)', 'reflect in the x-axis'] : ['y = f(−x)', 'reflect in the y-axis']
+        c.push([a, b])
+      }
+      return draw(r, c, n)
+    },
+  },
 ]
 
 export const deckById = (id: string) => DECKS.find((d) => d.id === id)

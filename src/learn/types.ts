@@ -1,4 +1,4 @@
-export type WidgetId = 'radians' | 'converter' | 'unitcircle' | 'triangles' | 'astc' | 'reference' | 'graphsolve' | 'inverse' | 'exprlab' | 'cubicroots' | 'holes' | 'ratgraph' | 'lineargraph' | 'quadlab' | 'signchart' | 'systemslab' | 'explog' | 'radicalfactor' | 'loglab'
+export type WidgetId = 'radians' | 'converter' | 'unitcircle' | 'triangles' | 'astc' | 'reference' | 'graphsolve' | 'inverse' | 'exprlab' | 'cubicroots' | 'holes' | 'ratgraph' | 'lineargraph' | 'quadlab' | 'signchart' | 'systemslab' | 'explog' | 'radicalfactor' | 'loglab' | 'transform' | 'invgraph' | 'composer' | 'polysketch' | 'asymptotes' | 'domainrange'
 
 export type Block =
   | { t: 'h'; text: string }

@@ -45,7 +45,7 @@ export const KEY_LABELS: [string, string, (q: Question) => boolean][] = [
 
 /** The helper keys for a question: the usual symbols that apply, plus any it asks for (ln(, log(, ∛). */
 export const keysFor = (q: Question): [string, string][] => [
-  ...KEY_LABELS.filter(([, , show]) => show(q)).map(([label, ins]): [string, string] => [label, ins]),
+  ...KEY_LABELS.filter(([, , show]) => q.kind !== 'word' && show(q)).map(([label, ins]): [string, string] => [label, ins]),
   ...(q.pad.extra ?? []).map((k): [string, string] => [k, k]),
 ]
 
