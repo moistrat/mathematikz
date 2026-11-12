@@ -16,8 +16,8 @@ describe('course content', () => {
       expect(l.blocks.filter((b) => b.t === 'widget').length, l.id).toBeGreaterThanOrEqual(1)
       expect(l.blocks.filter((b) => b.t === 'example').length, l.id).toBeGreaterThanOrEqual(2)
     }
-    expect(UNITS.length).toBeGreaterThanOrEqual(6)
-    expect(LESSONS.length).toBeGreaterThanOrEqual(32)
+    expect(UNITS.length).toBeGreaterThanOrEqual(7)
+    expect(LESSONS.length).toBeGreaterThanOrEqual(37)
   })
   it('check questions are well formed', () => {
     for (const l of LESSONS) for (const b of l.blocks) {
@@ -37,6 +37,6 @@ describe('course content', () => {
   })
   it('every widget used in a lesson exists', async () => {
     const used = new Set(LESSONS.flatMap((l) => l.blocks.flatMap((b) => (b.t === 'widget' ? [b.id] : []))))
-    expect([...used].sort()).toEqual(['ambiguous', 'astc', 'asymptotes', 'composer', 'converter', 'cubicroots', 'domainrange', 'explog', 'exprlab', 'graphsolve', 'holes', 'identity', 'inverse', 'invgraph', 'lineargraph', 'loglab', 'polysketch', 'quadlab', 'radians', 'radicalfactor', 'ratgraph', 'reference', 'rtri', 'signchart', 'systemslab', 'transform', 'triangles', 'trigsolve', 'unitcircle', 'wave'])
+    expect([...used].sort()).toEqual(['ambiguous', 'astc', 'asymptotes', 'composer', 'converter', 'cobweb', 'cubicroots', 'domainrange', 'explog', 'exprlab', 'graphsolve', 'holes', 'identity', 'inverse', 'invgraph', 'lineargraph', 'loglab', 'polysketch', 'quadlab', 'radians', 'radicalfactor', 'partialsums', 'pascal', 'ratgraph', 'reference', 'rtri', 'seqlab', 'signchart', 'systemslab', 'transform', 'triangles', 'trigsolve', 'unitcircle', 'wave'].sort())
   })
 })

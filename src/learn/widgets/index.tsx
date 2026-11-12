@@ -5,6 +5,7 @@ import { Astc, Reference, Triangles, UnitCircle } from './Circle'
 import { GraphSolve, Inverse } from './Equations'
 import { Asymptotes, Composer, DomainRange, InverseGraph, PolySketch, Transform } from './FunctionsLab'
 import { ExpLog, LogLab, RadicalFactor } from './Powers'
+import { Cobweb, PartialSums, Pascal, SeqLab } from './SeqLab'
 import { Ambiguous, IdentityLab, RightTriangle, TrigSolve, WaveLab } from './TrigLab'
 import { LinearGraph, QuadLab, SignChart, SystemsLab } from './Solving'
 
@@ -40,5 +41,9 @@ export function Widget({ id }: { id: WidgetId }) {
     case 'identity': return <IdentityLab />
     case 'wave': return <WaveLab />
     case 'trigsolve': return <TrigSolve />
+    case 'seqlab': return <SeqLab />
+    case 'partialsums': return <PartialSums />
+    case 'pascal': return <Pascal />
+    case 'cobweb': return <Cobweb />
   }
 }

@@ -188,6 +188,37 @@ export const DECKS: Deck[] = [
       return draw(r, c, n)
     },
   },
+  {
+    id: 'binomial-values', name: 'Choosing: the values of nCr', blurb: 'Pair each nCr with its value.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      for (let nn = 4; nn <= 12; nn++) for (let k = 2; k <= nn / 2; k++) { let v = 1; for (let i = 1; i <= k; i++) v = (v * (nn - k + i)) / i; c.push([`${nn}C${k}`, String(Math.round(v))]) }
+      return draw(r, c, n)
+    },
+  },
+  {
+    id: 'series-sums', name: 'Sums of arithmetic series', blurb: 'Pair each arithmetic series with its sum.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      for (let i = 0; i < 160; i++) {
+        const a = ri(r, 1, 12), d = ri(r, 1, 6), terms = ri(r, 8, 30)
+        c.push([`${a} + ${a + d} + ${a + 2 * d} + … (${terms} terms)`, String((terms * (2 * a + (terms - 1) * d)) / 2)])
+      }
+      return draw(r, c, n)
+    },
+  },
+  {
+    id: 'sequence-limits', name: 'Limits as n → ∞', blurb: 'Pair each expression in n with the number it approaches.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      for (let i = 0; i < 160; i++) {
+        const a = ri(r, 1, 9), cc = ri(r, 1, 6), b = ri(r, -5, 5), dd = ri(r, -5, 5)
+        const s = (k: number) => `${k < 0 ? '−' : '+'} ${Math.abs(k)}`
+        c.push([`(${a}n ${s(b || 1)}) / (${cc}n ${s(dd || 1)})`, fmtFrac(fr(a, cc))])
+      }
+      return draw(r, c, n)
+    },
+  },
 ]
 
 export const deckById = (id: string) => DECKS.find((d) => d.id === id)

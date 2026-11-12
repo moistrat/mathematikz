@@ -7,6 +7,7 @@ import { AlgSpec, checkAlgebra } from './algebra'
 import { ALG_GENS } from './algebraQuestions'
 import { EQ_GENS } from './equationQuestions'
 import { FN_GENS } from './functionQuestions'
+import { SEQ_GENS } from './seqQuestions'
 import { TRIG2_GENS } from './trigQuestions'
 import { POW_GENS } from './powerQuestions'
 import { complement, IntervalSet, normalise, parseSet, SetError, setsEqual } from './solve'
@@ -587,7 +588,7 @@ const TRIG_GENS: Gen[] = [
   } },
 ]
 
-const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS]
+const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS, ...SEQ_GENS]
 
 /* ------------------------------------------------------------------ public API */
 
@@ -630,7 +631,7 @@ export function checkAnswer(q: Question, text: string): Check {
   if (q.kind === 'value' || q.kind === 'approx') {
     const want = q.answers[0]
     const said = saysUndefined(stripLead(raw))
-    if (want === null) return said ? { ok: true } : { ok: false, note: 'Check the coordinates: tan θ = y / x, and one of them is zero here.' }
+    if (want === null) return said ? { ok: true } : { ok: false, note: q.pad.alg ? 'This has no finite value. If the quantity grows without bound or never settles, type diverges (or none for an asymptote).' : 'Check the coordinates: tan θ = y / x, and one of them is zero here.' }
     if (said) return { ok: false }
     if (q.needsExact && hasDecimal(raw)) return { ok: false, invalid: true, note: NE }
     let g: number

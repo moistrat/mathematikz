@@ -173,6 +173,35 @@ describe('unit 6 decks', () => {
   })
 })
 
+describe('unit 7 decks', () => {
+  const pairs = (deck: string, seed: number) => {
+    const board = buildBoard(deck, 6, seed)
+    return [0, 1, 2, 3, 4, 5].map((p) => board.filter((t) => t.pair === p).sort((x, y) => x.key.localeCompare(y.key)))
+  }
+  it('binomial values are right', () => {
+    const choose = (n: number, k: number) => { let c = 1; for (let i = 1; i <= k; i++) c = (c * (n - k + i)) / i; return Math.round(c) }
+    for (let s = 1; s <= 80; s++) for (const [a, b] of pairs('binomial-values', s * 3)) { const m = /^(\d+)C(\d+)$/.exec(a.text)!; expect(choose(Number(m[1]), Number(m[2])), a.text).toBe(Number(b.text)) }
+  })
+  it('series sums are right', () => {
+    for (let s = 1; s <= 80; s++) for (const [a, b] of pairs('series-sums', s * 5)) {
+      const m = /^(\d+) \+ (\d+) \+ \d+ \+ … \((\d+) terms\)$/.exec(a.text)!
+      const first = Number(m[1]), d = Number(m[2]) - first, n = Number(m[3])
+      let t = 0; for (let k = 0; k < n; k++) t += first + k * d
+      expect(t, a.text).toBe(Number(b.text))
+    }
+  })
+  it('limits are right', () => {
+    for (let s = 1; s <= 80; s++) for (const [a, b] of pairs('sequence-limits', s * 7)) {
+      const m = /^\((\d+)n [+−] \d+\) \/ \((\d+)n [+−] \d+\)$/.exec(a.text)!
+      const lim = Number(m[1]) / Number(m[2])
+      const big = 1e9, v = ((Number(m[1]) * big) / (Number(m[2]) * big))
+      expect(Math.abs(lim - v)).toBeLessThan(1e-9)
+      const [num, den] = b.text.includes('/') ? b.text.split('/').map(Number) : [Number(b.text), 1]
+      expect(Math.abs(num / den - lim), `${a.text} vs ${b.text}`).toBeLessThan(1e-9)
+    }
+  })
+})
+
 describe('scoring', () => {
   it('rewards streaks and rises in level', () => {
     expect(sprintScore(10, 2)).toBe(100)

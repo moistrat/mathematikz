@@ -4,7 +4,7 @@ The mathematics branch of Ikz (alongside Cirkitz and Mekanikz): same stack, layo
 
 ## Status
 
-Six units are built.
+Seven units are built.
 
 - **Unit 1, the unit circle**: 5 lessons, 8 interactive figures, about 30 question generators.
 - **Unit 2, factoring and rational expressions**: 6 lessons (expanding, factoring, polynomials and roots, simplifying, operations, rational equations), 4 interactive figures (expression checker, cubic with draggable roots, holes and asymptotes, rational equations graphed), about 60 question generators, and a symbolic answer checker.
@@ -16,6 +16,8 @@ Six units are built.
 - **Unit 5, functions and graphs**: 6 lessons, 6 interactive figures (domain and range, transformations, composition, inverse as mirror image, polynomial sketching from roots, rational asymptotes), about 45 generators, domain-style answers (≠, and, except) and one-word answers.
 
 - **Unit 6, trigonometry, continued**: 6 lessons, 5 interactive figures (right triangle, the ambiguous case, identity tester, wave lab, equation grapher), about 45 generators, and a trig-expression checker.
+
+- **Unit 7, sequences, series and the binomial theorem**: 5 lessons, 4 interactive figures (sequence terms, partial sums, Pascal's triangle, cobweb diagram), about 35 generators with built-in brute-force self-checks.
 
 Explore still only has the unit-circle tools. A Games page (Sprint, Survival, Match-up, Root hunter) is live.
 
@@ -43,8 +45,8 @@ Each unit follows the same recipe: lessons with worked examples, a table or form
 | 4 | Exponents, radicals and logarithms | built |
 | 5 | Functions and graphs: domain and range, transformations, composition, inverses, polynomial and rational graphs | built |
 | 6 | Trigonometry, continued: right triangles, sine and cosine rules, identities, graphs, general solutions | built |
-| 7 | Sequences, series and the binomial theorem | next |
-| 8 | Complex numbers and vectors | planned |
+| 7 | Sequences, series and the binomial theorem | built |
+| 8 | Complex numbers and vectors | next |
 | 9 | Limits and derivatives: definition, rules, chain rule, implicit, applications (optimisation, related rates) | planned |
 | 10 | Integrals: antiderivatives, substitution, by parts, partial fractions, areas and volumes | planned |
 | 11 | Series and advanced calculus: convergence tests, Taylor series, multivariable, partial derivatives, multiple integrals | planned |

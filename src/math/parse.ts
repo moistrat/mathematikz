@@ -135,7 +135,7 @@ export function evaluate(src: string, env: Env = {}): number {
   return v
 }
 
-const UNDEFINED = /^(undefined|und|dne|d\.n\.e\.?|does not exist|doesn'?t exist|not defined|no value|infinity|inf|∞|none|no (horizontal |oblique |vertical )?asymptotes?)$/
+const UNDEFINED = /^(undefined|und|dne|d\.n\.e\.?|does not exist|doesn'?t exist|not defined|no value|infinity|inf|∞|none|no (horizontal |oblique |vertical )?asymptotes?|diverges?|diverged|diverges to (∞|infinity|inf|-∞|-infinity)|does(n'?t| not) (converge|exist)|no limit|limit does(n'?t| not) exist)$/
 
 export const saysUndefined = (text: string) => UNDEFINED.test(text.trim().toLowerCase())
 
