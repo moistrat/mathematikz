@@ -21,7 +21,7 @@ function poly(terms: [number, string][]): string {
 }
 
 /** A square plot window with grid, axes and numbered ticks. */
-export function Plot({ x0, x1, y0, y1, children, label }: { x0: number; x1: number; y0: number; y1: number; children: (sx: (x: number) => number, sy: (y: number) => number) => React.ReactNode; label: string }) {
+export function Plot({ x0, x1, y0, y1, children, label, xTicks }: { x0: number; x1: number; y0: number; y1: number; children: (sx: (x: number) => number, sy: (y: number) => number) => React.ReactNode; label: string; xTicks?: { x: number; label: string }[] }) {
   const W = 640, H = 300
   const sx = (x: number) => ((x - x0) / (x1 - x0)) * W
   const sy = (y: number) => H - ((y - y0) / (y1 - y0)) * H
@@ -33,11 +33,13 @@ export function Plot({ x0, x1, y0, y1, children, label }: { x0: number; x1: numb
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="wsvg" role="img" aria-label={label}>
       <defs><clipPath id={`clip-${label.length}`}><rect x={0} y={0} width={W} height={H} /></clipPath></defs>
-      {xs.filter((t) => t % stepX === 0).map((t) => <line key={`gx${t}`} x1={sx(t)} x2={sx(t)} y1={0} y2={H} className="w-grid" />)}
+      {(xTicks ?? xs.filter((t) => t % stepX === 0).map((t) => ({ x: t, label: '' }))).map((t) => <line key={`gx${t.x}`} x1={sx(t.x)} x2={sx(t.x)} y1={0} y2={H} className="w-grid" />)}
       {ys.filter((t) => t % stepY === 0).map((t) => <line key={`gy${t}`} x1={0} x2={W} y1={sy(t)} y2={sy(t)} className="w-grid" />)}
       {y0 < 0 && y1 > 0 && <line x1={0} x2={W} y1={sy(0)} y2={sy(0)} className="w-axis" />}
       {x0 < 0 && x1 > 0 && <line x1={sx(0)} x2={sx(0)} y1={0} y2={H} className="w-axis" />}
-      {xs.filter((t) => t % stepX === 0 && t !== 0).map((t) => <text key={`tx${t}`} x={sx(t)} y={Math.min(H - 4, Math.max(12, sy(0) + 13))} textAnchor="middle" className="w-t sm">{t < 0 ? `${MINUS}${-t}` : t}</text>)}
+      {xTicks
+        ? xTicks.filter((t) => t.label).map((t) => <text key={`tx${t.x}`} x={sx(t.x)} y={Math.min(H - 4, Math.max(12, sy(0) + 13))} textAnchor="middle" className="w-t sm">{t.label}</text>)
+        : xs.filter((t) => t % stepX === 0 && t !== 0).map((t) => <text key={`tx${t}`} x={sx(t)} y={Math.min(H - 4, Math.max(12, sy(0) + 13))} textAnchor="middle" className="w-t sm">{t < 0 ? `${MINUS}${-t}` : t}</text>)}
       {ys.filter((t) => t % stepY === 0 && t !== 0).map((t) => <text key={`ty${t}`} x={Math.min(W - 18, Math.max(4, sx(0) + 5))} y={sy(t) - 3} className="w-t sm">{t < 0 ? `${MINUS}${-t}` : t}</text>)}
       <g clipPath={`url(#clip-${label.length})`}>{children(sx, sy)}</g>
     </svg>

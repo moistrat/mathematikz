@@ -5,6 +5,7 @@ import { Astc, Reference, Triangles, UnitCircle } from './Circle'
 import { GraphSolve, Inverse } from './Equations'
 import { Asymptotes, Composer, DomainRange, InverseGraph, PolySketch, Transform } from './FunctionsLab'
 import { ExpLog, LogLab, RadicalFactor } from './Powers'
+import { Ambiguous, IdentityLab, RightTriangle, TrigSolve, WaveLab } from './TrigLab'
 import { LinearGraph, QuadLab, SignChart, SystemsLab } from './Solving'
 
 export function Widget({ id }: { id: WidgetId }) {
@@ -34,5 +35,10 @@ export function Widget({ id }: { id: WidgetId }) {
     case 'polysketch': return <PolySketch />
     case 'asymptotes': return <Asymptotes />
     case 'domainrange': return <DomainRange />
+    case 'rtri': return <RightTriangle />
+    case 'ambiguous': return <Ambiguous />
+    case 'identity': return <IdentityLab />
+    case 'wave': return <WaveLab />
+    case 'trigsolve': return <TrigSolve />
   }
 }

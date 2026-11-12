@@ -2,9 +2,9 @@
 
 An interactive website for learning mathematics, from the ground up and free. It is the maths branch of the Ikz family, a sibling of Cirkitz and Mekanikz (same layout and dark theme, with a violet accent).
 
-The course has five units so far: **the unit circle**, **factoring and rational expressions**, **equations and inequalities**, **exponents, radicals and logarithms** and **functions and graphs**, and is meant to grow from algebra up to advanced calculus (the full course map is in `PLAN.md`).
+The course has six units so far: **the unit circle**, **factoring and rational expressions**, **equations and inequalities**, **exponents, radicals and logarithms**, **functions and graphs** and **trigonometry, continued**, and is meant to grow from algebra up to advanced calculus (the full course map is in `PLAN.md`).
 
-- **Learn**: twenty-six ordered lessons in five units, each with worked examples, check questions, progress tracking and interactive figures.
+- **Learn**: thirty-two ordered lessons in six units, each with worked examples, check questions, progress tracking and interactive figures.
 
   *Unit 1, the unit circle:*
   1. *Degrees and radians*: what a radian is, converting both ways, the sixteen common angles, negative and coterminal angles, arc length.
@@ -38,9 +38,16 @@ The course has five units so far: **the unit circle**, **factoring and rational 
   4. *Graphs of polynomials*: end behaviour, multiplicity, turning points, sign diagrams, building an equation from roots.
   5. *Rational functions and asymptotes*: vertical and horizontal and oblique asymptotes, holes, intercepts.
   6. *Modelling with functions*: average rate of change, linear, quadratic and piecewise models, even and odd functions, where a function rises or falls.
+  *Unit 6, trigonometry, continued:*
+  1. *Right-angled triangles*: SOH CAH TOA, finding sides and angles, the exact special triangles, elevation, depression and three dimensions.
+  2. *The sine and cosine rules*: choosing the rule, area, the ambiguous case, bearings.
+  3. *Reciprocal functions and identities*: sec, csc, cot, the Pythagorean identities, simplifying, proving, and refuting a false identity.
+  4. *Sum, difference and double angle formulas*: exact values at 15° and 75°, half angles, collapsing expressions, R sin(x + α).
+  5. *Graphs of trigonometric functions*: amplitude, period, phase shift, midline, equations from graphs, asymptotes, periodic models.
+  6. *Solving trigonometric equations in general*: general solutions, multiple and shifted angles, quadratics in sin x, and equations that need an identity.
 - **Practice**: *Free practice* generates endless questions with worked solutions by unit, lesson and difficulty. *Section practice* gives a repeatable 10-question round for every lesson and the whole unit (new numbers each time, concept questions mixed in), a review of what you missed, and your best score. Answers are typed and checked by value, so `√3/2`, `sqrt(3)/2` and `1/√2` all count, and `5π/6` can be typed `5pi/6`. Decimals are rejected where an exact answer is wanted. In Unit 2 you type algebra (`(x-1)(x+1)^2`, `x^2 - 3x`, `(x+2)/(x+3)`) and it is checked by value: an expansion must have no brackets left, a factorisation must be *complete* (no bracket that can still be factored, no common factor left inside), and a fraction must be in lowest terms. The feedback says which of these is missing. In Unit 3 you give exact roots (`2+sqrt(3), 2-sqrt(3)` or `2 ± sqrt(3)`), ordered pairs, and solution sets written as inequalities (`x < -2 or x >= 3`) or in interval notation (`(-inf, -2) U [3, inf)`); the set is compared exactly, open and closed ends included.
 In Unit 4, a radical answer must be in *simplest form* (no square or cube factor left under the root, no root in a denominator), answers with exponents must use positive exponents, and decimal answers to exponential equations can be typed as a number or as the working, for example `ln(20)/ln(3)`.
-- **Games**: Sprint (60 seconds, streak bonus), Survival (three lives, rising difficulty), Match-up (memory pairs from ten decks, for example inequalities and interval notation, simplifying roots, functions and their inverses, and transformations in words) and Root hunter (click where a graph crosses the axis). All use the same generators as Practice and keep personal bests on the device.
+- **Games**: Sprint (60 seconds, streak bonus), Survival (three lives, rising difficulty), Match-up (memory pairs from thirteen decks, for example inequalities and interval notation, simplifying roots, functions and their inverses, trig identities and the exact values at 15° and 75°) and Root hunter (click where a graph crosses the axis). All use the same generators as Practice and keep personal bests on the device.
 - **Explore**: a large draggable unit circle with exact readouts, a table of every special angle (click a row), and a degree/radian converter.
 
 ## Develop
@@ -63,6 +70,7 @@ Pushing to `main` deploys to GitHub Pages via `.github/workflows/deploy.yml`.
 - `src/math/equationQuestions.ts` has the Unit 3 generators (about 40). Every question also carries the equation or inequality as a predicate, and the tests check the answer against it on a dense grid of values, independently of how the answer was built.
 - `src/math/radicals.ts` is the Unit 4 radical engine (extracting roots, exact arithmetic with a + b√r) and the simplest-form check on what a student types. `src/math/powerQuestions.ts` has the Unit 4 generators (about 25), tested the same way as Unit 3's: answers are plugged back into the equation as written.
 - `src/math/functionQuestions.ts` has the Unit 5 generators (about 45): domains and ranges as solution sets, transformations done by substitution into the formula, inverses and compositions checked symbolically, polynomial and rational graph features, and one-word answers (even, odd, up, down, crosses, touches).
+- `src/math/trigAlgebra.ts` checks trigonometric expressions: an answer must be equal to the model answer at nine unrelated angles, not be the question written back, and use no more trig functions than the model answer (and sometimes must contain a given form such as 2x). `src/math/trigQuestions.ts` has the Unit 6 generators (about 45): triangles built from their true measurements, identities from verified templates, and trigonometric equations whose hand-derived solution lists are checked by a numeric root scanner before they are ever shown.
 - `src/math/games.ts` is the logic of the games (decks, scoring, Root hunter rounds).
 - `src/math/algebraQuestions.ts` has the Unit 2 generators (about 60). Each is built from explicit factors or roots, so the answer is known by construction, then run through the engine so the shown text cannot disagree with it.
 - `src/math/questions.ts` has the question generators (about 30, in three levels, each with a worked solution) and the answer checker. Tests run every generator over many random seeds and confirm that each question accepts its own answer and rejects wrong ones.

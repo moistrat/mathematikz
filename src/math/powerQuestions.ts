@@ -19,7 +19,7 @@ import { fmtRoot, rootInput, rootValue } from './solve'
 
 const SUB = '₀₁₂₃₄₅₆₇₈₉'
 const sub = (n: number) => String(n).split('').map((d) => SUB[Number(d)]).join('')
-const supInt = (n: number) => `${n < 0 ? '⁻' : ''}${sup(Math.abs(n))}`
+export const supInt = (n: number) => `${n < 0 ? '⁻' : ''}${sup(Math.abs(n))}`
 /** ASCII with ^ and * -> typeset: x^3*y^(-2) becomes x³·y⁻² */
 const fancy = (s: string) => s
   .replace(/\^\(-(\d+)\)/g, (_, d: string) => `⁻${sup(Number(d))}`)
@@ -29,13 +29,13 @@ const fancy = (s: string) => s
   .replace(/-/g, MINUS)
 const logT = (b: number | 'e', arg: string) => (b === 'e' ? `ln ${arg}` : `log${sub(b)} ${arg}`)
 const paren = (n: string | number) => (/^[\d.]+$/.test(String(n)) ? String(n) : `(${n})`)
-const fm = (f: Frac) => fmtFrac(f)
+export const fm = (f: Frac) => fmtFrac(f)
 
 /** a rational answer to a numeric question */
 const valueFrac = (prompt: string, f: Frac, hint: string, expl: string[]): Spec => numSpec(prompt, f, hint, expl)
 
 /** an exact answer a + b√r that must be in simplest radical form */
-function radicalSpec(prompt: string, x: ReturnType<typeof root>, hint: string, expl: string[], rejects: string[] = []): Spec {
+export function radicalSpec(prompt: string, x: ReturnType<typeof root>, hint: string, expl: string[], rejects: string[] = []): Spec {
   return {
     prompt, kind: 'value', answers: [rootValue(x)], display: fmtRoot(x), input: rootInput(x), unit: '', needsExact: x.b.n !== 0 || x.a.d !== 1,
     tol: 1e-9, hint, explanation: expl, pad: { pi: false, root: true, comma: false, alg: true }, simplest: true, rejects,
@@ -43,7 +43,7 @@ function radicalSpec(prompt: string, x: ReturnType<typeof root>, hint: string, e
 }
 
 /** a decimal answer of an exponential or logarithmic equation */
-function approxSpec(prompt: string, value: number, places: number, hint: string, expl: string[], holds?: (x: number) => boolean, label = 'x'): Spec {
+export function approxSpec(prompt: string, value: number, places: number, hint: string, expl: string[], holds?: (x: number) => boolean, label = 'x'): Spec {
   const shown = value.toFixed(places)
   return {
     prompt: `${prompt} Give your answer to ${places} decimal place${places === 1 ? '' : 's'}.`, kind: 'approx', answers: [value], display: `${label} ≈ ${shown.replace('-', MINUS)}`, input: shown, unit: '',

@@ -8,6 +8,8 @@ import {
 } from './exact'
 import { mulberry, pick, Rng, shuffle } from './rng'
 import { fmtIntervals, fmtSet, IntervalSet } from './solve'
+import { COMPOUND, IDENTITIES } from './trigQuestions'
+import { showTrig } from './trigAlgebra'
 
 /* ------------------------------------------------------------------ match-up decks */
 
@@ -157,6 +159,31 @@ export const DECKS: Deck[] = [
           : kind === 4 ? [`y = f(x) − ${k}`, `shift down ${k}`] : kind === 5 ? [`y = ${k + 1}f(x)`, `stretch vertically, factor ${k + 1}`] : kind === 6 ? [`y = f(${k + 1}x)`, `squeeze horizontally, factor ${k + 1}`]
             : kind === 7 ? ['y = −f(x)', 'reflect in the x-axis'] : ['y = f(−x)', 'reflect in the y-axis']
         c.push([a, b])
+      }
+      return draw(r, c, n)
+    },
+  },
+  {
+    id: 'trig-identities', name: 'Trigonometric identities', blurb: 'Pair each expression with the simpler expression it is equal to.',
+    make: (r, n) => draw(r, IDENTITIES.map((t): [string, string] => [showTrig(t.src), showTrig(t.ans)]), n),
+  },
+  {
+    id: 'compound-values', name: 'Exact values at 15°, 75°, 105° and 165°', blurb: 'Pair each function of a compound angle with its exact value.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      for (const [d, v] of Object.entries(COMPOUND)) for (const fn of ['sin', 'cos', 'tan'] as const) c.push([`${fn} ${d}°`, v[fn]])
+      return draw(r, c, n)
+    },
+  },
+  {
+    id: 'trig-periods', name: 'Periods of trigonometric graphs', blurb: 'Pair each graph with its period.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      for (const fn of ['sin', 'cos', 'tan']) for (const [num, den] of [[2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [1, 2], [1, 3], [2, 3], [3, 2]]) {
+        const base = fn === 'tan' ? 180 : 360, period = (base * den) / num
+        if (!Number.isInteger(period)) continue
+        const arg = den !== 1 ? (num === 1 ? `x/${den}` : `${num}x/${den}`) : `${num}x`
+        c.push([`y = ${fn}${den !== 1 ? `(${arg})` : ` ${arg}`}`, fmtPi(period)])
       }
       return draw(r, c, n)
     },

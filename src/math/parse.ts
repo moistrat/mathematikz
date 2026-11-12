@@ -7,6 +7,10 @@ export class ParseError extends Error {}
 
 type Tok = { t: 'num'; v: number } | { t: 'id'; v: string } | { t: 'op'; v: string }
 
+const TRIG: Record<string, (x: number) => number> = {
+  sin: Math.sin, cos: Math.cos, tan: Math.tan, sec: (x) => 1 / Math.cos(x), csc: (x) => 1 / Math.sin(x), cot: (x) => 1 / Math.tan(x),
+}
+
 function tokenize(src: string): Tok[] {
   const s = src
     .toLowerCase()
@@ -14,6 +18,8 @@ function tokenize(src: string): Tok[] {
     .replace(/[×·⋅]/g, '*')
     .replace(/÷/g, '/')
     .replace(/π/g, ' pi ')
+    .replace(/θ/g, ' theta ')
+    .replace(/⁻?[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, (m) => `^(${m.startsWith('⁻') ? '-' : ''}${[...m.replace('⁻', '')].map((c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)).join('')})`)
     .replace(/√/g, ' sqrt ')
     .replace(/∛/g, ' cbrt ')
     .replace(/°/g, '')
@@ -42,7 +48,10 @@ function tokenize(src: string): Tok[] {
 }
 
 /** Evaluate an expression like "5pi/6" or "-sqrt(3)/2". Throws ParseError. */
-export function evaluate(src: string): number {
+/** Letters that stand for the angle in a trig expression: sin(x), sin(t), sin(θ) all use the same value. */
+export type Env = Record<string, number>
+
+export function evaluate(src: string, env: Env = {}): number {
   const toks = tokenize(src)
   let pos = 0
   const peek = () => toks[pos]
@@ -97,6 +106,13 @@ export function evaluate(src: string): number {
       throw new ParseError(`unexpected ${k.v}`)
     }
     if (k.v === 'pi') return Math.PI
+    if (TRIG[k.v]) {
+      // sin^2(x) puts the power before the bracket; sin(x)^2 is handled by the caller as an ordinary power
+      let e = 1
+      if (isOp('^')) { pos++; const neg = isOp('-'); if (neg) pos++; e = atom(); if (neg) e = -e }
+      return Math.pow(TRIG[k.v](atom()), e)
+    }
+    if (k.v in env) return env[k.v]
     if (k.v === 'e') return Math.E
     if (k.v === 'cbrt') return Math.cbrt(power())
     if (k.v === 'ln' || k.v === 'log' || k.v === 'exp') {

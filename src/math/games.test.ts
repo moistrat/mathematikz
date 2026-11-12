@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { evalExpr, parseRat, rEq } from './algebra'
 import { evaluate } from './parse'
+import { valueAt } from './trigAlgebra'
 import { parseSet, setsEqual } from './solve'
 import { buildBoard, DECKS, judgeClicks, matchStars, rootRound, rootValue, sprintScore, survivalLevel } from './games'
 
@@ -137,6 +138,37 @@ describe('unit 5 decks', () => {
         const [a, b] = board.filter((t) => t.pair === p).sort((x, y) => x.key.localeCompare(y.key))
         for (const x of [-2, 0, 1.5, 3]) expect(fromEq(a.text)(x), `${a.text} vs ${b.text}`).toBeCloseTo(fromWords(b.text)(x))
       }
+    }
+  })
+})
+
+describe('unit 6 decks', () => {
+  const pairs = (deck: string, seed: number) => {
+    const board = buildBoard(deck, 6, seed)
+    return [0, 1, 2, 3, 4, 5].map((p) => board.filter((t) => t.pair === p).sort((x, y) => x.key.localeCompare(y.key)))
+  }
+  it('identities pair equal expressions', () => {
+    for (let s = 1; s <= 80; s++) for (const [a, b] of pairs('trig-identities', s * 3)) {
+      for (const t of [0.37, 1.23, 2.51, 4.07]) {
+        const u = valueAt(a.text, t), v = valueAt(b.text, t)
+        if (Number.isFinite(u) && Number.isFinite(v)) expect(Math.abs(u - v), `${a.text} vs ${b.text} at ${t}`).toBeLessThan(1e-9)
+      }
+    }
+  })
+  it('compound-angle values are right', () => {
+    for (let s = 1; s <= 80; s++) for (const [a, b] of pairs('compound-values', s * 5)) {
+      const m = /^(sin|cos|tan) (\d+)°$/.exec(a.text)!
+      const x = (Math.PI * Number(m[2])) / 180
+      const want = m[1] === 'sin' ? Math.sin(x) : m[1] === 'cos' ? Math.cos(x) : Math.tan(x)
+      expect(Math.abs(evaluate(b.text.replace(/−/g, '-').replace(/√(\d+)/g, 'sqrt($1)')) - want), `${a.text} vs ${b.text}`).toBeLessThan(1e-9)
+    }
+  })
+  it('periods are right', () => {
+    for (let s = 1; s <= 80; s++) for (const [a, b] of pairs('trig-periods', s * 7)) {
+      const m = /^y = (sin|cos|tan) ?\(?(?:(\d+)x\/(\d+)|x\/(\d+)|(\d+)x)\)?$/.exec(a.text)!
+      const fn = m[1], bn = m[2] ? Number(m[2]) / Number(m[3]) : m[4] ? 1 / Number(m[4]) : Number(m[5])
+      const period = (fn === 'tan' ? Math.PI : 2 * Math.PI) / bn
+      expect(Math.abs(evaluate(b.text) - period), `${a.text} vs ${b.text}`).toBeLessThan(1e-9)
     }
   })
 })

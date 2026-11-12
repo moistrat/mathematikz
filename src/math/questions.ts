@@ -7,10 +7,12 @@ import { AlgSpec, checkAlgebra } from './algebra'
 import { ALG_GENS } from './algebraQuestions'
 import { EQ_GENS } from './equationQuestions'
 import { FN_GENS } from './functionQuestions'
+import { TRIG2_GENS } from './trigQuestions'
 import { POW_GENS } from './powerQuestions'
 import { complement, IntervalSet, normalise, parseSet, SetError, setsEqual } from './solve'
 import { evaluate, parseList, saysUndefined, stripLead } from './parse'
 import { radicalFormProblem } from './radicals'
+import { checkTrig, TrigSpec } from './trigAlgebra'
 import { mulberry, pick, Rng } from './rng'
 
 export type Kind = 'value' | 'approx' | 'set' | 'pair' | 'alg' | 'ineq' | 'word'
@@ -39,6 +41,8 @@ export interface Question {
   pad: { pi: boolean; root: boolean; comma: boolean; alg?: boolean; extra?: string[] }
   /** present for symbolic questions (expand, factor, simplify, solve for a letter) */
   alg?: AlgSpec
+  /** present for trigonometric expressions and identities */
+  trig?: TrigSpec
   /** ineq: the solution set the student's inequality or interval must equal */
   iv?: IntervalSet
   /** word: the accepted spellings of the answer (lower case); the first is the one shown */
@@ -583,7 +587,7 @@ const TRIG_GENS: Gen[] = [
   } },
 ]
 
-const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS]
+const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS]
 
 /* ------------------------------------------------------------------ public API */
 
@@ -616,6 +620,7 @@ const hasDecimal = (s: string) => /\d\.|\.\d/.test(s)
 export function checkAnswer(q: Question, text: string): Check {
   const raw = text.trim()
   if (!raw) return { ok: false, invalid: true, note: 'Type an answer first.' }
+  if (q.trig) return checkTrig(q.trig, raw)
   if (q.alg) return checkAlgebra(q.alg, raw)
   if (q.kind === 'ineq') return checkSet(q, raw)
   if (q.kind === 'word') return checkWord(q, raw)
