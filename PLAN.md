@@ -49,7 +49,7 @@ Each unit follows the same recipe: lessons with worked examples, a table or form
 | 6 | Trigonometry, continued: right triangles, sine and cosine rules, identities, graphs, general solutions | built |
 | 7 | Sequences, series and the binomial theorem | built |
 | 8 | Complex numbers and vectors | built |
-| 9 | Limits and derivatives: definition, rules, chain rule, implicit, applications (optimisation, related rates) | planned |
+| 9 | Limits and derivatives: definition, rules, chain rule, implicit, applications (optimisation, related rates) | next |
 | 10 | Integrals: antiderivatives, substitution, by parts, partial fractions, areas and volumes | planned |
 | 11 | Series and advanced calculus: convergence tests, Taylor series, multivariable, partial derivatives, multiple integrals | planned |
 | 12 | Differential equations, linear algebra, probability and statistics | planned |
