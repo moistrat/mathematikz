@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { evalExpr, parseRat, rEq } from './algebra'
+import { parseSet, setsEqual } from './solve'
 import { buildBoard, DECKS, judgeClicks, matchStars, rootRound, rootValue, sprintScore, survivalLevel } from './games'
 
 describe('match-up decks', () => {
@@ -32,6 +33,33 @@ describe('match-up decks', () => {
         const asc = (t: string) => t.replace(/−/g, '-').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, (m) => `^${[...m].map((c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)).join('')}`)
         expect(rEq(parseRat(asc(a.text)), parseRat(asc(b.text))), `${a.text} vs ${b.text}`).toBe(true)
         expect(evalExpr(asc(a.text), { x: 2 })).toBeCloseTo(evalExpr(asc(b.text), { x: 2 }))
+      }
+    }
+  })
+})
+
+const ascii = (t: string) => t.replace(/−/g, '-').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, (m) => `^${[...m].map((c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)).join('')}`)
+
+describe('unit 3 decks', () => {
+  it('inequality and interval pairs describe the same set', () => {
+    for (let s = 1; s <= 80; s++) {
+      const board = buildBoard('interval-notation', 6, s * 3)
+      for (let p = 0; p < 6; p++) {
+        const [a, b] = board.filter((t) => t.pair === p).sort((x, y) => x.key.localeCompare(y.key))
+        const iv = b.text.replace(/−/g, '-').replace(/∞/g, 'inf')
+        expect(setsEqual(parseSet(a.text), parseSet(iv)), `${a.text} vs ${b.text}`).toBe(true)
+      }
+    }
+  })
+  it('each quadratic pairs with its own two roots', () => {
+    for (let s = 1; s <= 80; s++) {
+      const board = buildBoard('quadratic-roots', 6, s * 5)
+      for (let p = 0; p < 6; p++) {
+        const [a, b] = board.filter((t) => t.pair === p).sort((x, y) => x.key.localeCompare(y.key))
+        const roots = ascii(b.text).replace('x = ', '').split(', ').map(Number)
+        const [lhs, rhs] = ascii(a.text).split(' = ')
+        expect(roots.length).toBe(2)
+        for (const x of roots) expect(Math.abs(evalExpr(lhs, { x }) - evalExpr(rhs, { x })), `${a.text} at x = ${x}`).toBeLessThan(1e-9)
       }
     }
   })

@@ -5,10 +5,12 @@ import {
 } from './exact'
 import { AlgSpec, checkAlgebra } from './algebra'
 import { ALG_GENS } from './algebraQuestions'
+import { EQ_GENS } from './equationQuestions'
+import { complement, IntervalSet, normalise, parseSet, SetError, setsEqual } from './solve'
 import { evaluate, parseList, saysUndefined, stripLead } from './parse'
 import { mulberry, pick, Rng } from './rng'
 
-export type Kind = 'value' | 'approx' | 'set' | 'pair' | 'alg'
+export type Kind = 'value' | 'approx' | 'set' | 'pair' | 'alg' | 'ineq'
 
 export interface Question {
   id: string
@@ -34,6 +36,10 @@ export interface Question {
   pad: { pi: boolean; root: boolean; comma: boolean; alg?: boolean }
   /** present for symbolic questions (expand, factor, simplify, solve for a letter) */
   alg?: AlgSpec
+  /** ineq: the solution set the student's inequality or interval must equal */
+  iv?: IntervalSet
+  /** tests only: does this x satisfy the equation or inequality as written? Used to check answers independently. */
+  holds?: (x: number) => boolean
 }
 
 export type Spec = Omit<Question, 'id' | 'lesson' | 'level' | 'gen'>
@@ -568,7 +574,7 @@ const TRIG_GENS: Gen[] = [
   } },
 ]
 
-const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS]
+const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS]
 
 /* ------------------------------------------------------------------ public API */
 
@@ -602,6 +608,7 @@ export function checkAnswer(q: Question, text: string): Check {
   const raw = text.trim()
   if (!raw) return { ok: false, invalid: true, note: 'Type an answer first.' }
   if (q.alg) return checkAlgebra(q.alg, raw)
+  if (q.kind === 'ineq') return checkSet(q, raw)
   const NF = q.pad.alg ? NOTE_FORMAT_ALG : NOTE_FORMAT
   const NE = q.pad.alg ? 'Give an exact fraction such as 1/3, not a decimal.' : NOTE_EXACT
 
@@ -620,11 +627,11 @@ export function checkAnswer(q: Question, text: string): Check {
   if (q.kind === 'set' && q.answers.length === 0) return none ? { ok: true } : { ok: false, note: 'Check each candidate in the original equation: does it make a denominator zero?' }
   if (none) return { ok: false, note: q.pad.alg ? 'There is at least one solution. Check your working.' : undefined }
   let gs: number[]
-  try { gs = parseList(raw) } catch { return { ok: false, invalid: true, note: NF } }
+  try { gs = parseList(expandPlusMinus(raw)) } catch { return { ok: false, invalid: true, note: NF } }
   if (q.needsExact && hasDecimal(raw)) return { ok: false, invalid: true, note: NE }
   const want = q.answers as number[]
   if (q.kind === 'pair') {
-    if (gs.length !== 2) return { ok: false, invalid: true, note: 'Give both coordinates, like (1/2, √3/2).' }
+    if (gs.length !== want.length) return { ok: false, invalid: true, note: want.length === 2 ? 'Give both coordinates, like (1/2, √3/2).' : `Give all ${want.length} values, like (1, 2, 3).` }
     return { ok: gs.every((g, i) => Math.abs(g - want[i]) <= q.tol) }
   }
   const sorted = [...gs].sort((a, b) => a - b)
@@ -632,4 +639,26 @@ export function checkAnswer(q: Question, text: string): Check {
   if (dedup.length < want.length && dedup.every((g) => want.some((w) => Math.abs(g - w) <= q.tol))) return { ok: false, note: q.pad.alg ? 'Those are all correct, but there are more solutions. Did you find every factor that can be zero?' : 'Those are all correct, but there are more solutions in the interval. Check every quadrant, and the endpoints.' }
   if (dedup.length > want.length) return { ok: false, note: q.pad.alg ? 'Too many: substitute each one back into the original equation. Does it really work?' : 'Too many: check that each angle is a real solution and lies inside the interval.' }
   return { ok: dedup.length === want.length && dedup.every((g, i) => Math.abs(g - want[i]) <= q.tol) }
+}
+
+/** "(−3 ± √5)/2" stands for two answers; so does "2 ± sqrt(3)". Expand each such part into its + and − versions. */
+export function expandPlusMinus(raw: string): string {
+  return raw.replace(/\+\/-/g, '±').split(/[,;]/).flatMap((part) => (part.includes('±') ? [part.replace('±', '+'), part.replace('±', '-')] : [part])).join(',')
+}
+
+/** Inequality and interval answers: compare the sets, and say what is wrong when the endpoints are right. */
+function checkSet(q: Question, raw: string): Check {
+  let got: IntervalSet
+  try { got = parseSet(raw) } catch (e) {
+    return { ok: false, invalid: true, note: e instanceof SetError ? e.message : 'Could not read that. Write an inequality like x > 3, or an interval like (3, ∞).' }
+  }
+  if (q.needsExact && hasDecimal(raw)) return { ok: false, invalid: true, note: 'Give exact endpoints (fractions or roots), not decimals.' }
+  const want = q.iv ?? []
+  if (setsEqual(got, want)) return { ok: true }
+  const ends = (s: IntervalSet) => normalise(s).flatMap((i) => [i.lo, i.hi]).filter(isFinite)
+  const a = ends(got), b = ends(want)
+  const sameEnds = a.length === b.length && a.every((v, i) => Math.abs(v - b[i]) < 1e-7)
+  if (setsEqual(got, complement(want))) return { ok: false, note: 'That is the opposite region. Test a number from each region in the original inequality.' }
+  if (sameEnds) return { ok: false, note: 'Right boundary values. Now check each end: it is included (≤, ≥, square bracket) only when the boundary itself satisfies the inequality, and never when it makes a denominator zero.' }
+  return { ok: false }
 }

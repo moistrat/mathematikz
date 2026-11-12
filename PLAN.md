@@ -4,10 +4,12 @@ The mathematics branch of Ikz (alongside Cirkitz and Mekanikz): same stack, layo
 
 ## Status
 
-Two units are built.
+Three units are built.
 
 - **Unit 1, the unit circle**: 5 lessons, 8 interactive figures, about 30 question generators.
 - **Unit 2, factoring and rational expressions**: 6 lessons (expanding, factoring, polynomials and roots, simplifying, operations, rational equations), 4 interactive figures (expression checker, cubic with draggable roots, holes and asymptotes, rational equations graphed), about 60 question generators, and a symbolic answer checker.
+
+- **Unit 3, equations and inequalities**: 6 lessons (linear equations and formulas, solving quadratics, the quadratic formula, inequalities, absolute value, systems), 4 interactive figures (line intersection, quadratic explorer, sign chart, systems of lines), about 40 question generators, a solution-set checker and an exact-roots checker.
 
 Explore still only has the unit-circle tools. A Games page (Sprint, Survival, Match-up, Root hunter) is live.
 
@@ -30,8 +32,9 @@ Each unit follows the same recipe: lessons with worked examples, a table or form
 |---|------|--------|
 | 1 | The unit circle | built |
 | 2 | Factoring and rational expressions | built |
-| 3 | Equations and inequalities: linear, quadratic (factoring, completing the square, formula), absolute value, inequalities, systems | next |
-| 4 | Exponents, radicals and logarithms | planned |
+| 3 | Equations and inequalities: linear, quadratic (factoring, completing the square, formula), absolute value, inequalities, systems | built |
+
+| 4 | Exponents, radicals and logarithms | next |
 | 5 | Functions and graphs: domain and range, transformations, composition, inverses, polynomial and rational graphs | planned |
 | 6 | Trigonometry, continued: right triangles, sine and cosine rules, identities, graphs, general solutions | planned |
 | 7 | Sequences, series and the binomial theorem | planned |

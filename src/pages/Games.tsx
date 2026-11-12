@@ -309,7 +309,7 @@ function RootHunter() {
   const hint = useMemo(() => (round ? `${round.roots.length} root${round.roots.length > 1 ? 's' : ''} to find.` : ''), [round])
   useEffect(() => {
     if (phase !== 'play' || verdict) return
-    const on = (e: KeyboardEvent) => { if (e.key === 'Enter' && clicks.length && !(e.target as HTMLElement)?.closest('button')) { e.preventDefault(); check() } }
+    const on = (e: KeyboardEvent) => { if (e.key === 'Enter' && clicks.length && !(e.target instanceof Element && e.target.closest('button'))) { e.preventDefault(); check() } }
     window.addEventListener('keydown', on)
     return () => window.removeEventListener('keydown', on)
   })

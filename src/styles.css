@@ -372,3 +372,4 @@ p.warn { margin: .6rem 0 0; }
 .tile.up { background: var(--surface); color: var(--text); border-color: var(--accent); }
 .tile.done { opacity: .45; border-color: var(--border); cursor: default; }
 .rootgraph { background: var(--canvas-bg); }
+.wsvg .w-shade { fill: var(--accent); opacity: .35; }

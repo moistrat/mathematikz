@@ -15,8 +15,8 @@ import { pick, Rng } from './rng'
 
 /* ------------------------------------------------------------------ small helpers */
 
-const ri = (r: Rng, lo: number, hi: number) => lo + Math.floor(r() * (hi - lo + 1))
-const rnz = (r: Rng, lo: number, hi: number) => { let v = 0; while (v === 0) v = ri(r, lo, hi); return v }
+export const ri = (r: Rng, lo: number, hi: number) => lo + Math.floor(r() * (hi - lo + 1))
+export const rnz = (r: Rng, lo: number, hi: number) => { let v = 0; while (v === 0) v = ri(r, lo, hi); return v }
 const VARS = ['x', 'x', 'x', 'x', 't', 'n', 'y', 'a']
 const PAIRS: [string, string][] = [['x', 'y'], ['x', 'y'], ['a', 'b'], ['m', 'n'], ['p', 'q'], ['u', 'v']]
 
@@ -50,15 +50,15 @@ function distinct<T>(_r: Rng, n: number, make: () => T, key: (t: T) => string = 
   return out
 }
 
-const ALG_PAD = { pi: false, root: false, comma: false, alg: true }
+export const ALG_PAD = { pi: false, root: false, comma: false, alg: true }
 
-function alg(mode: AlgMode, prompt: string, source: string, answer: string, hint: string, explanation: string[], solveFor?: string): Spec {
+export function alg(mode: AlgMode, prompt: string, source: string, answer: string, hint: string, explanation: string[], solveFor?: string): Spec {
   return {
     prompt, kind: 'alg', answers: [], display: pretty(answer), input: answer, unit: '', needsExact: false, tol: 0, hint, explanation,
     pad: ALG_PAD, alg: { mode, source, answer, solveFor },
   }
 }
-function rootsSpec(prompt: string, roots: Frac[], v: string, hint: string, explanation: string[]): Spec {
+export function rootsSpec(prompt: string, roots: Frac[], v: string, hint: string, explanation: string[]): Spec {
   const sorted = [...roots].sort((a, b) => fNum(a) - fNum(b))
   const nonTerminating = sorted.some((f) => { let d = f.d; while (d % 2 === 0) d /= 2; while (d % 5 === 0) d /= 5; return d !== 1 })
   return {
@@ -67,13 +67,13 @@ function rootsSpec(prompt: string, roots: Frac[], v: string, hint: string, expla
     pad: { pi: false, root: false, comma: true, alg: true },
   }
 }
-function numSpec(prompt: string, n: Frac, hint: string, explanation: string[]): Spec {
+export function numSpec(prompt: string, n: Frac, hint: string, explanation: string[]): Spec {
   return {
     prompt, kind: 'value', answers: [fNum(n)], display: fmtFrac(n), input: fmtFrac(n), unit: '', needsExact: n.d !== 1, tol: 1e-9, hint, explanation,
     pad: { pi: false, root: false, comma: false, alg: true },
   }
 }
-const joinList = (xs: string[]) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`)
+export const joinList = (xs: string[]) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`)
 
 /* ------------------------------------------------------------------ factored fractions */
 

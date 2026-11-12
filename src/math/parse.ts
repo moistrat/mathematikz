@@ -121,9 +121,26 @@ export function stripLead(text: string): string {
   return text.trim().replace(/^[a-zθ]\s*=\s*/i, '')
 }
 
+/** Remove one pair of outer brackets, but only when they really wrap the whole text: "(1, 2)" yes, "1 + sqrt(2)" no. */
+function unwrap(text: string): string {
+  let t = text.trim()
+  for (;;) {
+    const pairs: Record<string, string> = { '(': ')', '[': ']', '{': '}' }
+    const open = t[0]
+    if (!(open in pairs) || t[t.length - 1] !== pairs[open]) return t
+    let depth = 0
+    for (let i = 0; i < t.length; i++) {
+      if (t[i] === open) depth++
+      else if (t[i] === pairs[open]) depth--
+      if (depth === 0 && i < t.length - 1) return t // closed early: "(1+2)(3+4)"
+    }
+    t = t.slice(1, -1).trim()
+  }
+}
+
 /** Split a list answer into evaluated numbers. Accepts commas, semicolons and "and"; brackets are ignored. */
 export function parseList(text: string): number[] {
-  const t = stripLead(text).replace(/^[\s({[{]+|[\s)}\]]+$/g, '').replace(/\band\b/gi, ',')
+  const t = unwrap(stripLead(text)).replace(/\band\b/gi, ',')
   if (!t.trim()) throw new ParseError('empty')
   return t.split(/[,;]/).map((part) => {
     if (!part.trim()) throw new ParseError('empty item')

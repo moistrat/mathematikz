@@ -7,6 +7,7 @@ import {
   cosExact, fmtDeg, fmtPi, fmtSurd, sinExact, SPECIAL_DEGREES, tanExact,
 } from './exact'
 import { mulberry, pick, Rng, shuffle } from './rng'
+import { fmtIntervals, fmtSet, IntervalSet } from './solve'
 
 /* ------------------------------------------------------------------ match-up decks */
 
@@ -58,6 +59,35 @@ export const DECKS: Deck[] = [
         const ascii = (s: string) => s.replace(/−/g, '-')
         const poly = fmtPoly(pMul(parsePoly(ascii(f1)), parsePoly(ascii(f2))), true)
         c.push([`(${f1})(${f2})`, pretty(poly)])
+      }
+      return draw(r, c, n)
+    },
+  },
+  {
+    id: 'interval-notation', name: 'Inequalities and intervals', blurb: 'Pair each inequality with the same set in interval notation.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      for (let i = 0; i < 120; i++) {
+        const a = ri(r, -8, 6), b = a + ri(r, 2, 8), kind = ri(r, 1, 4)
+        const ai = r() < 0.5, bi = r() < 0.5
+        const set: IntervalSet = kind === 1 ? [{ lo: -Infinity, hi: a, loIncl: false, hiIncl: ai }]
+          : kind === 2 ? [{ lo: a, hi: Infinity, loIncl: ai, hiIncl: false }]
+            : kind === 3 ? [{ lo: a, hi: b, loIncl: ai, hiIncl: bi }]
+              : [{ lo: -Infinity, hi: a, loIncl: false, hiIncl: ai }, { lo: b, hi: Infinity, loIncl: bi, hiIncl: false }]
+        c.push([fmtSet(set), fmtIntervals(set)])
+      }
+      return draw(r, c, n)
+    },
+  },
+  {
+    id: 'quadratic-roots', name: 'Quadratics and their roots', blurb: 'Pair each quadratic equation with its two solutions.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      for (let i = 0; i < 120; i++) {
+        const p = ri(r, -7, 7), q = ri(r, -7, 7)
+        if (!p || !q || p >= q) continue
+        const poly = fmtPoly(pMul(parsePoly(`x-(${p})`), parsePoly(`x-(${q})`)), true)
+        c.push([`${pretty(poly)} = 0`, `x = ${p < 0 ? '−' : ''}${Math.abs(p)}, ${q < 0 ? '−' : ''}${Math.abs(q)}`])
       }
       return draw(r, c, n)
     },

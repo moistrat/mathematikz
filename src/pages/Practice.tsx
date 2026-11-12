@@ -14,7 +14,7 @@ export function useEnterToContinue(active: boolean, next: () => void) {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Enter' || e.repeat || e.defaultPrevented) return
       // A focused button or link already handles Enter itself; don't advance twice.
-      if ((e.target as HTMLElement | null)?.closest('button, a, select, textarea')) return
+      if (e.target instanceof Element && e.target.closest('button, a, select, textarea')) return
       e.preventDefault()
       ref.current()
     }
@@ -29,6 +29,13 @@ export const KEY_LABELS: [string, string, (q: Question) => boolean][] = [
   ['π', 'π', (q) => q.pad.pi],
   ['√', '√', (q) => q.pad.root],
   ['^', '^', (q) => !!q.alg],
+  ['≤', '≤', (q) => q.kind === 'ineq'],
+  ['≥', '≥', (q) => q.kind === 'ineq'],
+  ['<', '<', (q) => q.kind === 'ineq'],
+  ['>', '>', (q) => q.kind === 'ineq'],
+  ['∞', '∞', (q) => q.kind === 'ineq'],
+  ['or', ' or ', (q) => q.kind === 'ineq'],
+  ['±', '±', (q) => q.pad.root && q.pad.alg === true && q.kind === 'set'],
   ['/', '/', () => true],
   ['−', '−', () => true],
   ['(', '(', () => true],
@@ -70,7 +77,7 @@ function Ask({ q, mode, onResult, onNext, nextLabel }: {
     if (res.invalid) { setNote(res.note ?? ''); return }
     if (res.ok) { setState('right'); setNote(''); if (tries === 0) onResult(true); return }
     if (tries === 0) onResult(false)
-    setTries(tries + 1); setState('wrong'); setNote(res.note ?? (mode === 'free' ? 'Not quite. Check the signs and the quadrant, then try again.' : ''))
+    setTries(tries + 1); setState('wrong'); setNote(res.note ?? (mode === 'free' ? (q.pad.alg || q.alg ? 'Not quite. Re-check your signs and each step of the working, then try again.' : 'Not quite. Check the signs and the quadrant, then try again.') : ''))
   }
   const quiet = state === 'wrong' && mode === 'free'
 
@@ -86,7 +93,7 @@ function Ask({ q, mode, onResult, onNext, nextLabel }: {
       {!done && (
         <div className="keys" aria-label="Symbols">
           {KEY_LABELS.filter(([, , show]) => show(q)).map(([label, ins]) => <button key={label} type="button" className="symkey" onClick={() => insert(ins)} aria-label={`Insert ${label}`}>{label}</button>)}
-          <span className="muted small">{q.alg ? 'Type powers with ^ (x^2) and write products side by side: 2x(x + 1). Any equivalent form counts, as long as it is in the form the question asks for.' : q.pad.alg ? 'Type whole numbers or fractions such as −3 or 1/2, and separate several answers with commas.' : 'You can also type pi and sqrt(3). Any equivalent exact form counts.'}</span>
+          <span className="muted small">{q.kind === 'ineq' ? 'Write an inequality such as x > 3 or −1 < x ≤ 4, or interval notation such as (3, ∞). Join separate pieces with “or”, and type no solution or all real numbers when that is the answer.' : q.kind === 'set' && q.pad.root && q.pad.alg ? 'Give exact roots, using √ (or sqrt) and ± if you like: (−3 ± √5)/2. Separate answers with commas, or type no real solution.' : q.alg ? 'Type powers with ^ (x^2) and write products side by side: 2x(x + 1). Any equivalent form counts, as long as it is in the form the question asks for.' : q.pad.alg ? 'Type whole numbers or fractions such as −3 or 1/2, and separate several answers with commas.' : 'You can also type pi and sqrt(3). Any equivalent exact form counts.'}</span>
         </div>
       )}
       {note && state !== 'right' && <p className="q-note">{note}</p>}
