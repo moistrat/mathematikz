@@ -7,6 +7,7 @@ import { AlgSpec, checkAlgebra } from './algebra'
 import { ALG_GENS } from './algebraQuestions'
 import { EQ_GENS } from './equationQuestions'
 import { FN_GENS } from './functionQuestions'
+import { CX_GENS } from './cxQuestions'
 import { SEQ_GENS } from './seqQuestions'
 import { TRIG2_GENS } from './trigQuestions'
 import { POW_GENS } from './powerQuestions'
@@ -14,9 +15,10 @@ import { complement, IntervalSet, normalise, parseSet, SetError, setsEqual } fro
 import { evaluate, parseList, saysUndefined, stripLead } from './parse'
 import { radicalFormProblem } from './radicals'
 import { checkTrig, TrigSpec } from './trigAlgebra'
+import { Cx, cEq, parseCx, splitList } from './complex'
 import { mulberry, pick, Rng } from './rng'
 
-export type Kind = 'value' | 'approx' | 'set' | 'pair' | 'alg' | 'ineq' | 'word'
+export type Kind = 'value' | 'approx' | 'set' | 'pair' | 'alg' | 'ineq' | 'word' | 'complex'
 
 export interface Question {
   id: string
@@ -46,6 +48,8 @@ export interface Question {
   trig?: TrigSpec
   /** ineq: the solution set the student's inequality or interval must equal */
   iv?: IntervalSet
+  /** complex: the complex number(s) the student must give, each in the form a + bi (any order for several) */
+  cx?: Cx[]
   /** word: the accepted spellings of the answer (lower case); the first is the one shown */
   words?: string[]
   /** value answers: must also be in simplest radical form (no square factor under the root, no root in a denominator) */
@@ -588,7 +592,7 @@ const TRIG_GENS: Gen[] = [
   } },
 ]
 
-const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS, ...SEQ_GENS]
+const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS, ...SEQ_GENS, ...CX_GENS]
 
 /* ------------------------------------------------------------------ public API */
 
@@ -625,6 +629,7 @@ export function checkAnswer(q: Question, text: string): Check {
   if (q.alg) return checkAlgebra(q.alg, raw)
   if (q.kind === 'ineq') return checkSet(q, raw)
   if (q.kind === 'word') return checkWord(q, raw)
+  if (q.kind === 'complex') return checkComplex(q, raw)
   const NF = q.pad.alg ? NOTE_FORMAT_ALG : NOTE_FORMAT
   const NE = q.pad.alg ? 'Give an exact fraction such as 1/3, not a decimal.' : NOTE_EXACT
 
@@ -690,4 +695,28 @@ function checkWord(q: Question, raw: string): Check {
   if (ok) return { ok: true }
   const options = q.pad.extra?.length ? ` Choose one of: ${q.pad.extra.join(', ')}.` : ''
   return { ok: false, note: options.trim() || undefined }
+}
+
+/** One or several complex numbers, each written a + bi; several are compared as a set. */
+function checkComplex(q: Question, raw: string): Check {
+  const want = q.cx ?? []
+  const parts = splitList(raw)
+  const got: Cx[] = []
+  for (const p of parts) {
+    try {
+      const r = parseCx(p)
+      if (!r.simple) return { ok: false, invalid: true, note: 'Write each answer in the form a + bi: multiply out brackets, replace i² by −1, and remove i from any denominator (multiply top and bottom by the conjugate).' }
+      got.push(r.z)
+    } catch (e) {
+      return { ok: false, invalid: true, note: e instanceof Error && e.message ? `Could not read that as a complex number. Type it like 3 + 4i, 2 − i, i/2 or −5. (${e.message})` : 'Could not read that as a complex number.' }
+    }
+  }
+  if (got.length !== want.length) return { ok: false, note: want.length > 1 ? `There are ${want.length} answers: give them all, separated by commas.` : undefined }
+  const used = new Set<number>()
+  for (const g of got) {
+    const i = want.findIndex((w, j) => !used.has(j) && cEq(w, g))
+    if (i < 0) return { ok: false }
+    used.add(i)
+  }
+  return { ok: true }
 }

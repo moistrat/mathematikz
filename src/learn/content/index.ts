@@ -6,7 +6,8 @@ import { unit4 } from './unit4'
 import { unit5 } from './unit5'
 import { unit6 } from './unit6'
 import { unit7 } from './unit7'
+import { unit8 } from './unit8'
 
-export const UNITS: Unit[] = [unit1, unit2, unit3, unit4, unit5, unit6, unit7]
+export const UNITS: Unit[] = [unit1, unit2, unit3, unit4, unit5, unit6, unit7, unit8]
 export const LESSONS: Lesson[] = UNITS.flatMap((u) => u.lessons)
 export const unitOf = (lessonId: string) => UNITS.find((u) => u.lessons.some((l) => l.id === lessonId))

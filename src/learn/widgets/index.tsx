@@ -1,6 +1,7 @@
 import { WidgetId } from '../types'
 import { CubicRoots, ExprLab, Holes, RatGraph } from './Algebra'
 import { Converter, Radians } from './Angles'
+import { Argand, CrossLab, RootsUnity, VectorLab } from './ComplexVec'
 import { Astc, Reference, Triangles, UnitCircle } from './Circle'
 import { GraphSolve, Inverse } from './Equations'
 import { Asymptotes, Composer, DomainRange, InverseGraph, PolySketch, Transform } from './FunctionsLab'
@@ -45,5 +46,9 @@ export function Widget({ id }: { id: WidgetId }) {
     case 'partialsums': return <PartialSums />
     case 'pascal': return <Pascal />
     case 'cobweb': return <Cobweb />
+    case 'argand': return <Argand />
+    case 'rootsunity': return <RootsUnity />
+    case 'vectorlab': return <VectorLab />
+    case 'crosslab': return <CrossLab />
   }
 }

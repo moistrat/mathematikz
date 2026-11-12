@@ -219,6 +219,48 @@ export const DECKS: Deck[] = [
       return draw(r, c, n)
     },
   },
+  {
+    id: 'complex-products', name: 'Multiplying complex numbers', blurb: 'Pair each product of two complex numbers with the answer in the form a + bi.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      const t = (re: number, im: number) => { const m = (v: number) => (v < 0 ? '−' : '+'); const bi = `${Math.abs(im) === 1 ? '' : Math.abs(im)}i`; return re === 0 ? `${im < 0 ? '−' : ''}${bi}` : `${re < 0 ? '−' : ''}${Math.abs(re)} ${m(im)} ${bi}` }
+      for (let i = 0; i < 200; i++) {
+        const a = ri(r, -5, 5), b = ri(r, -5, 5), cc = ri(r, -5, 5), d = ri(r, -5, 5)
+        if (!a || !b || !cc || !d) continue
+        const re = a * cc - b * d, im = a * d + b * cc
+        if (!im) continue
+        c.push([`(${t(a, b)})(${t(cc, d)})`, t(re, im)])
+      }
+      return draw(r, c, n)
+    },
+  },
+  {
+    id: 'dot-products', name: 'Dot products', blurb: 'Pair each pair of vectors with the value of their dot product.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      const v = (x: number[]) => `(${x.map((e) => (e < 0 ? `−${-e}` : String(e))).join(', ')})`
+      for (let i = 0; i < 200; i++) {
+        const dim = ri(r, 2, 3), a = Array.from({ length: dim }, () => ri(r, -6, 6)), b = Array.from({ length: dim }, () => ri(r, -6, 6))
+        const d = a.reduce((sum, x, j) => sum + x * b[j], 0)
+        c.push([`${v(a)} · ${v(b)}`, d < 0 ? `−${-d}` : String(d)])
+      }
+      return draw(r, c, n)
+    },
+  },
+  {
+    id: 'cross-products', name: 'Cross products', blurb: 'Pair each cross product of two vectors in space with the vector it gives.',
+    make: (r, n) => {
+      const c: [string, string][] = []
+      const v = (x: number[]) => `(${x.map((e) => (e < 0 ? `−${-e}` : String(e))).join(', ')})`
+      for (let i = 0; i < 200; i++) {
+        const a = [ri(r, -4, 4), ri(r, -4, 4), ri(r, -4, 4)], b = [ri(r, -4, 4), ri(r, -4, 4), ri(r, -4, 4)]
+        const x = [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]
+        if (x.every((e) => e === 0)) continue
+        c.push([`${v(a)} × ${v(b)}`, v(x)])
+      }
+      return draw(r, c, n)
+    },
+  },
 ]
 
 export const deckById = (id: string) => DECKS.find((d) => d.id === id)

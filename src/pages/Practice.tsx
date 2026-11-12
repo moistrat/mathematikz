@@ -29,6 +29,7 @@ export const KEY_LABELS: [string, string, (q: Question) => boolean][] = [
   ['π', 'π', (q) => q.pad.pi],
   ['√', '√', (q) => q.pad.root],
   ['^', '^', (q) => !!q.alg || !!q.trig],
+  ['i', 'i', (q) => q.kind === 'complex'],
   ['≤', '≤', (q) => q.kind === 'ineq'],
   ['≥', '≥', (q) => q.kind === 'ineq'],
   ['<', '<', (q) => q.kind === 'ineq'],
@@ -99,7 +100,7 @@ function Ask({ q, mode, onResult, onNext, nextLabel }: {
       {!done && (
         <div className="keys" aria-label="Symbols">
           {keysFor(q).map(([label, ins]) => <button key={label} type="button" className="symkey" onClick={() => insert(ins)} aria-label={`Insert ${label}`}>{label}</button>)}
-          <span className="muted small">{q.trig ? 'Write functions with brackets: sin(x), cos(2x), tan(x), sec(x), csc(x), cot(x), with powers like sin(x)^2 or sin²x, and angles in radians (type pi for π). Any simplified equal form counts.' : q.kind === 'ineq' ? 'Write an inequality such as x > 3 or −1 < x ≤ 4, or interval notation such as (3, ∞). Join separate pieces with “or”, and type no solution or all real numbers when that is the answer.' : q.kind === 'set' && q.pad.root && q.pad.alg ? 'Give exact roots, using √ (or sqrt) and ± if you like: (−3 ± √5)/2. Separate answers with commas, or type no real solution.' : q.alg ? 'Type powers with ^ (x^2) and write products side by side: 2x(x + 1). Any equivalent form counts, as long as it is in the form the question asks for.' : q.pad.alg ? 'Type whole numbers or fractions such as −3 or 1/2, and separate several answers with commas.' : 'You can also type pi and sqrt(3). Any equivalent exact form counts.'}</span>
+          <span className="muted small">{q.kind === 'complex' ? 'Write complex numbers as a + bi, for example 3 + 4i, 2 − i, i/2 or −5. Any equal form counts as long as it is multiplied out. Use j or i. Separate several answers with commas.' : q.trig ? 'Write functions with brackets: sin(x), cos(2x), tan(x), sec(x), csc(x), cot(x), with powers like sin(x)^2 or sin²x, and angles in radians (type pi for π). Any simplified equal form counts.' : q.kind === 'ineq' ? 'Write an inequality such as x > 3 or −1 < x ≤ 4, or interval notation such as (3, ∞). Join separate pieces with “or”, and type no solution or all real numbers when that is the answer.' : q.kind === 'set' && q.pad.root && q.pad.alg ? 'Give exact roots, using √ (or sqrt) and ± if you like: (−3 ± √5)/2. Separate answers with commas, or type no real solution.' : q.alg ? 'Type powers with ^ (x^2) and write products side by side: 2x(x + 1). Any equivalent form counts, as long as it is in the form the question asks for.' : q.pad.alg ? 'Type whole numbers or fractions such as −3 or 1/2, and separate several answers with commas.' : 'You can also type pi and sqrt(3). Any equivalent exact form counts.'}</span>
         </div>
       )}
       {note && state !== 'right' && <p className="q-note">{note}</p>}

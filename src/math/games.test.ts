@@ -236,3 +236,36 @@ describe('root hunter', () => {
     expect(judgeClicks([-2, 3], [-2.5, 3]).found).toEqual([3])
   })
 })
+
+describe('unit 8 decks', () => {
+  const pairs = (deck: string, seed: number) => {
+    const board = buildBoard(deck, 6, seed)
+    return [0, 1, 2, 3, 4, 5].map((q) => board.filter((t) => t.pair === q).sort((x, y) => x.key.localeCompare(y.key)))
+  }
+  const num = (t: string) => Number(t.replace('−', '-'))
+  it('complex products are right', () => {
+    const parse = (t: string): [number, number] => {
+      const m = /^(?:(−?\d+)(?=[+−]))?([+−]?)(\d*)i$/.exec(t.replace(/ /g, ''))!
+      const mag = m[3] === '' ? 1 : Number(m[3])
+      return [m[1] ? num(m[1]) : 0, m[2] === '−' ? -mag : mag]
+    }
+    for (let s = 1; s <= 60; s++) for (const [a, b] of pairs('complex-products', s * 11)) {
+      const m = /^\((.+)\)\((.+)\)$/.exec(a.text)!
+      const z = parse(m[1]), w = parse(m[2]), p = parse(b.text)
+      expect([z[0] * w[0] - z[1] * w[1] + 0, z[0] * w[1] + z[1] * w[0] + 0], a.text).toEqual(p)
+    }
+  })
+  it('dot and cross products are right', () => {
+    const vec = (t: string) => t.slice(1, -1).split(', ').map(num)
+    for (let s = 1; s <= 60; s++) {
+      for (const [a, b] of pairs('dot-products', s * 13)) {
+        const [x, y] = a.text.split(' · ').map(vec)
+        expect(x.reduce((t, e, j) => t + e * y[j], 0), a.text).toBe(num(b.text))
+      }
+      for (const [a, b] of pairs('cross-products', s * 17)) {
+        const [p, q] = a.text.split(' × ').map(vec)
+        expect([p[1] * q[2] - p[2] * q[1], p[2] * q[0] - p[0] * q[2], p[0] * q[1] - p[1] * q[0]].map((e) => e + 0), a.text).toEqual(vec(b.text))
+      }
+    }
+  })
+})

@@ -19,6 +19,8 @@ Seven units are built.
 
 - **Unit 7, sequences, series and the binomial theorem**: 5 lessons, 4 interactive figures (sequence terms, partial sums, Pascal's triangle, cobweb diagram), about 35 generators with built-in brute-force self-checks.
 
+- **Unit 8, complex numbers and vectors**: 5 lessons, 4 interactive figures (Argand diagram, roots of a number, 2D dot-product lab, 3D cross-product lab), about 40 generators, and 3 more match-up decks.
+
 Explore still only has the unit-circle tools. A Games page (Sprint, Survival, Match-up, Root hunter) is live.
 
 ## Pages
@@ -46,7 +48,7 @@ Each unit follows the same recipe: lessons with worked examples, a table or form
 | 5 | Functions and graphs: domain and range, transformations, composition, inverses, polynomial and rational graphs | built |
 | 6 | Trigonometry, continued: right triangles, sine and cosine rules, identities, graphs, general solutions | built |
 | 7 | Sequences, series and the binomial theorem | built |
-| 8 | Complex numbers and vectors | next |
+| 8 | Complex numbers and vectors | built |
 | 9 | Limits and derivatives: definition, rules, chain rule, implicit, applications (optimisation, related rates) | planned |
 | 10 | Integrals: antiderivatives, substitution, by parts, partial fractions, areas and volumes | planned |
 | 11 | Series and advanced calculus: convergence tests, Taylor series, multivariable, partial derivatives, multiple integrals | planned |
