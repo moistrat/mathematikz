@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { Learn } from './pages/Learn'
 import { Practice } from './pages/Practice'
 import { Explore } from './pages/Explore'
+import { Games } from './pages/Games'
 
-type Page = 'learn' | 'practice' | 'explore'
+type Page = 'learn' | 'practice' | 'games' | 'explore'
 const TABS: { id: Page; label: string }[] = [
   { id: 'learn', label: 'Learn' },
   { id: 'practice', label: 'Practice' },
+  { id: 'games', label: 'Games' },
   { id: 'explore', label: 'Explore' },
 ]
 
@@ -43,6 +45,7 @@ export default function App() {
       <main>
         {route.page === 'learn' && <Learn lessonId={route.arg} />}
         {route.page === 'practice' && <Practice arg={route.arg} />}
+        {route.page === 'games' && <Games arg={route.arg} />}
         {route.page === 'explore' && <Explore />}
       </main>
     </>

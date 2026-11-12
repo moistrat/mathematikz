@@ -349,3 +349,26 @@ p.warn { margin: .6rem 0 0; }
   .explore-main { grid-template-columns: 1fr; }
   .explore-side { position: static; }
 }
+
+/* games */
+.game-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: .8rem; margin-top: 1rem; }
+.game-card { text-decoration: none; color: var(--text); display: block; transition: border-color .12s; }
+.game-card:hover { border-color: var(--accent); }
+.game-card h3 { margin: 0 0 .4rem; font-size: 1.1rem; }
+.game-card p { margin: 0; font-size: 14px; line-height: 1.55; }
+.game-setup { max-width: 560px; display: grid; gap: .7rem; }
+.game-setup .field { margin: 0; }
+.game-hud { display: flex; gap: 1.4rem; align-items: center; flex-wrap: wrap; margin-bottom: .8rem; font-size: 14px; color: var(--text-dim); }
+.game-hud b { color: var(--text); font-size: 1.15rem; }
+.game-hud .timer { font-family: var(--mono); font-size: 1.8rem; font-weight: 650; color: var(--text); min-width: 3.4rem; }
+.game-hud .timer.low { color: var(--danger); }
+.lives { display: inline-flex; gap: .3rem; }
+.lives i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border-strong); display: block; }
+.lives i.on { background: var(--accent); border-color: var(--accent); }
+.deck-list { display: grid; gap: .4rem; }
+.board { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: .5rem; }
+.tile { font: inherit; font-family: var(--mono); font-size: 15px; font-weight: 600; min-height: 76px; padding: .4rem; background: var(--surface-2); color: var(--text-faint); border: 1px solid var(--border-strong); border-radius: 8px; cursor: pointer; display: grid; place-items: center; text-align: center; overflow-wrap: anywhere; transition: border-color .12s, background .12s; }
+.tile:hover:not(.up) { border-color: var(--accent); }
+.tile.up { background: var(--surface); color: var(--text); border-color: var(--accent); }
+.tile.done { opacity: .45; border-color: var(--border); cursor: default; }
+.rootgraph { background: var(--canvas-bg); }

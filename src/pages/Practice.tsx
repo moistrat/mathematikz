@@ -6,7 +6,7 @@ import { checkAnswer, generateQuestion, LEVELS, Question } from '../math/questio
 import { load, save } from '../state/storage'
 
 /** Press Enter to continue once a question has been answered (the answer box is disabled by then, so nothing else has focus). */
-function useEnterToContinue(active: boolean, next: () => void) {
+export function useEnterToContinue(active: boolean, next: () => void) {
   const ref = useRef(next)
   ref.current = next
   useEffect(() => {
@@ -25,7 +25,7 @@ function useEnterToContinue(active: boolean, next: () => void) {
 
 /* ------------------------------------------------------------------ the answer box */
 
-const KEY_LABELS: [string, string, (q: Question) => boolean][] = [
+export const KEY_LABELS: [string, string, (q: Question) => boolean][] = [
   ['π', 'π', (q) => q.pad.pi],
   ['√', '√', (q) => q.pad.root],
   ['^', '^', (q) => !!q.alg],

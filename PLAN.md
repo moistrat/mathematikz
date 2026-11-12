@@ -9,7 +9,7 @@ Two units are built.
 - **Unit 1, the unit circle**: 5 lessons, 8 interactive figures, about 30 question generators.
 - **Unit 2, factoring and rational expressions**: 6 lessons (expanding, factoring, polynomials and roots, simplifying, operations, rational equations), 4 interactive figures (expression checker, cubic with draggable roots, holes and asymptotes, rational equations graphed), about 60 question generators, and a symbolic answer checker.
 
-Explore still only has the unit-circle tools.
+Explore still only has the unit-circle tools. A Games page (Sprint, Survival, Match-up, Root hunter) is live.
 
 ## Pages
 1. **Learn** – units and lessons with worked examples, check questions and progress.
@@ -22,14 +22,28 @@ Vite + React + TypeScript, plain CSS (tokens copied from Cirkitz), Vitest, stati
 ## Done when (each unit)
 Content tests, engine tests and thousands of generated questions pass (every question accepts its own answer, its source equals its answer, and every generator offers real variety); the production build is clean; every page was loaded and exercised in the browser, including at phone width.
 
-## Roadmap (suggested order)
-1. **Algebra foundations** (partly done in Unit 2): still to add arithmetic with fractions and surds, linear and quadratic equations and the quadratic formula, inequalities, exponents and radicals, logs.
-2. **Functions and graphs**: functions, transformations, quadratics, polynomials.
-3. **Trigonometry, continued**: right-triangle trig, sine and cosine rules, identities (Pythagorean, double angle, sum and difference), reciprocal functions (sec, csc, cot), general solutions of trig equations, graphs of sin/cos/tan with amplitude, period and phase.
-4. **Vectors and complex numbers**, then **calculus** (limits, derivatives, integrals), then **differential equations**, **linear algebra** and **statistics**.
+## Course map (algebra to advanced calculus)
+
+Each unit follows the same recipe: lessons with worked examples, a table or formulas, check questions and interactive figures; generated practice at three levels with worked solutions; and tests that pin the engine and every generator. Games draw on the same generators.
+
+| # | Unit | Status |
+|---|------|--------|
+| 1 | The unit circle | built |
+| 2 | Factoring and rational expressions | built |
+| 3 | Equations and inequalities: linear, quadratic (factoring, completing the square, formula), absolute value, inequalities, systems | next |
+| 4 | Exponents, radicals and logarithms | planned |
+| 5 | Functions and graphs: domain and range, transformations, composition, inverses, polynomial and rational graphs | planned |
+| 6 | Trigonometry, continued: right triangles, sine and cosine rules, identities, graphs, general solutions | planned |
+| 7 | Sequences, series and the binomial theorem | planned |
+| 8 | Complex numbers and vectors | planned |
+| 9 | Limits and derivatives: definition, rules, chain rule, implicit, applications (optimisation, related rates) | planned |
+| 10 | Integrals: antiderivatives, substitution, by parts, partial fractions, areas and volumes | planned |
+| 11 | Series and advanced calculus: convergence tests, Taylor series, multivariable, partial derivatives, multiple integrals | planned |
+| 12 | Differential equations, linear algebra, probability and statistics | planned |
+
+Games already live: Sprint, Survival, Match-up (three decks), Root hunter. Each new unit adds a match-up deck and its generators automatically join Sprint and Survival.
 
 ## Ideas for later
-- A Games page (for example "name that angle", "beat the clock" on exact values, "solve the equation" with a graph).
 - Step-by-step solver that checks each line of a student's working.
 - Extend exact values to 15° multiples with the sum and difference formulas.
 - Complex numbers, so quadratics and cubics with no real roots get complex solutions instead of "none".
