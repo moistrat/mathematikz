@@ -100,3 +100,19 @@ export function polyDef(cs: number[], a: number, b: number): Frac {
   return tot
 }
 import { fAdd as fAddH, fSub as fSubH } from './algebra'
+
+/** a formula in x and y, such as a partial derivative; checked against a numerical partial derivative */
+export function pdSpec(prompt: string, source: string, answer: string, wrt: 'x' | 'y', hint: string, expl: string[], order: 1 | 2 = 1): Spec {
+  for (const [x, y] of XY) {
+    let got: number, want: number
+    try { got = numPartial(source, wrt, x, y, order); want = evaluate(answer, { x, y }) } catch { continue }
+    if (Number.isFinite(got) && Number.isFinite(want)) must(Math.abs(got - want) < (order === 1 ? 2e-5 : 3e-3) * (1 + Math.abs(want)), `∂${source}/∂${wrt} is not ${answer} at (${x}, ${y}): ${got} vs ${want}`)
+  }
+  const extra: string[] = []
+  if (/ln\(/.test(answer + source)) extra.push('ln(')
+  if (/e\^/.test(answer + source)) extra.push('e^(')
+  if (/sin\(|cos\(/.test(answer + source)) extra.push('sin(', 'cos(')
+  return { prompt, kind: 'alg', answers: [], display: S(answer), input: answer, unit: '', needsExact: false, tol: 0, hint, explanation: expl.map((e) => e.replace(/\^1(?!\d)/g, '').replace(/\^(\d+)/g, (_m, d: string) => sup(Number(d)))), pad: { pi: false, root: /sqrt/.test(answer + source), comma: false, alg: true, extra }, calc: { source, answer, two: true } }
+}
+import { XY, numPartial } from './calculus'
+import { evaluate } from './parse'

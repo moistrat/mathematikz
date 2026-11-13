@@ -1,5 +1,6 @@
 import { WidgetId } from '../types'
 import { CubicRoots, ExprLab, Holes, RatGraph } from './Algebra'
+import { ConvInterval, DoubleInt, GradLab, SeriesConv, TaylorLab } from './SeriesLab'
 import { Converter, Radians } from './Angles'
 import { AccumLab, BetweenLab, FamilyLab, PartSteps, RevolveLab, RiemannLab, SubSteps } from './IntegralLab'
 import { BoxOpt, DerivGraph, ImplicitLab, Ladder, LimitLab, SecantLab } from './CalculusLab'
@@ -65,5 +66,10 @@ export function Widget({ id }: { id: WidgetId }) {
     case 'revolve': return <RevolveLab />
     case 'substeps': return <SubSteps />
     case 'partsteps': return <PartSteps />
+    case 'seriesconv': return <SeriesConv />
+    case 'taylorlab': return <TaylorLab />
+    case 'convinterval': return <ConvInterval />
+    case 'gradlab': return <GradLab />
+    case 'doubleint': return <DoubleInt />
   }
 }

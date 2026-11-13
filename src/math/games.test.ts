@@ -320,3 +320,32 @@ describe('unit 10 decks', () => {
     for (const id of ['antiderivative-pairs', 'definite-values', 'area-values']) for (let s = 1; s <= 30; s++) { const b = buildBoard(id, 6, s * 13); expect(b.length).toBe(12); expect(new Set(b.map((t) => t.text)).size).toBe(12) }
   })
 })
+
+describe('unit 11 decks', () => {
+  it('series sums are right (numerically)', async () => {
+    const { seriesSumPool } = await import('./games')
+    const { mulberry } = await import('./rng')
+    const val = (t: string) => (t.includes('/') ? t.split('/').map(Number).reduce((x, y) => x / y) : Number(t))
+    for (let sd = 1; sd <= 4; sd++) for (const [t, v] of seriesSumPool(mulberry(sd))) {
+      let s = 0
+      let m = /Σ \(n ≥ 0\) of (\d+)\(1\/(\d+)\)ⁿ/.exec(t)
+      if (m) { for (let n = 0; n < 400; n++) s += Number(m[1]) * (1 / Number(m[2])) ** n }
+      else if ((m = /Σ \(n ≥ 1\) of 1\/\(n\(n \+ (\d+)\)\)/.exec(t))) { for (let n = 1; n <= 200000; n++) s += 1 / (n * (n + Number(m[1]))) }
+      else if ((m = /Σ \(n ≥ 1\) of (\d+)\/(\d+)ⁿ/.exec(t))) { for (let n = 1; n < 400; n++) s += Number(m[1]) / Number(m[2]) ** n }
+      else throw new Error(t)
+      expect(Math.abs(s - val(v)), `${t} = ${v}`).toBeLessThan(1e-3)
+    }
+  })
+  it('partial derivatives are right', async () => {
+    const { partialPool } = await import('./games')
+    const { mulberry } = await import('./rng')
+    const { numPartial } = await import('./calculus')
+    const { evaluate } = await import('./parse')
+    for (let sd = 1; sd <= 3; sd++) for (const [f, d, v] of partialPool(mulberry(sd))) for (const [x, y] of [[0.7, 1.3], [1.2, 0.6], [1.9, 1.1]]) {
+      expect(Math.abs(numPartial(f, v as 'x' | 'y', x, y) - evaluate(d, { x, y })), `${f} -> ${d}`).toBeLessThan(1e-3 * (1 + Math.abs(evaluate(d, { x, y }))))
+    }
+  })
+  it('the decks build', () => {
+    for (const id of ['series-sums-infinite', 'radii-convergence', 'partial-pairs']) for (let s = 1; s <= 30; s++) { const b = buildBoard(id, 6, s * 13); expect(b.length, id).toBe(12); expect(new Set(b.map((t) => t.text)).size, id).toBe(12) }
+  })
+})

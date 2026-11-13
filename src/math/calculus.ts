@@ -14,6 +14,8 @@ export interface CalcSpec {
   pos?: boolean
   /** the answer is an antiderivative: any constant of integration may be added or left out */
   plusC?: boolean
+  /** the formula uses both x and y */
+  two?: boolean
   /** sample only inside this open interval of x (for example (−1/2, 1/2) for sin⁻¹(2x)) */
   dom?: [number, number]
   /** values of x that must be avoided (where the formula is undefined) are skipped automatically */
@@ -24,6 +26,40 @@ export const SAMPLE_POS = [0.37, 0.61, 0.81, 1.23, 1.43, 1.93, 2.51, 3.37, 4.1, 
 export const samplesFor = (pos?: boolean, dom?: [number, number]) => (dom ? Array.from({ length: 10 }, (_, i) => dom[0] + ((dom[1] - dom[0]) * (i + 0.5)) / 10) : pos ? SAMPLE_POS : SAMPLE_ALL)
 const norm = (s: string) => s.toLowerCase().replace(/[−–—]/g, '-').replace(/\s+/g, '')
 const at = (src: string, x: number) => evaluate(src, { x })
+export const XY: [number, number][] = [[0.7, 1.3], [-1.2, 0.8], [1.9, -0.6], [2.2, 1.7], [-0.5, -1.4], [1.1, 2.4], [0.4, 0.9], [-1.8, 1.5], [2.6, 0.3], [0.9, -1.1], [1.5, 1.5], [-0.8, 2.1]]
+const at2 = (src: string, x: number, y: number) => evaluate(src, { x, y })
+/** two formulas in x and y agree at many sample points */
+export function sameFormula2(a: string, b: string): boolean {
+  let n = 0
+  for (const [x, y] of XY) {
+    let u: number, v: number
+    try { u = at2(a, x, y); v = at2(b, x, y) } catch (e) { if (e instanceof ParseError) continue; throw e }
+    if (!Number.isFinite(u) || !Number.isFinite(v)) continue
+    if (Math.abs(u - v) > 1e-7 * (1 + Math.abs(v))) return false
+    n++
+  }
+  return n >= 6
+}
+/** the partial derivative of an ASCII function of x and y at a point, by central differences */
+export function numPartial(src: string, v: 'x' | 'y', x: number, y: number, order: 1 | 2 = 1): number {
+  const h = order === 1 ? 1e-5 : 1e-3
+  const f = (dx: number, dy: number) => at2(src, x + dx, y + dy)
+  const [ex, ey] = v === 'x' ? [h, 0] : [0, h]
+  return order === 1 ? (f(ex, ey) - f(-ex, -ey)) / (2 * h) : (f(ex, ey) - 2 * f(0, 0) + f(-ex, -ey)) / (h * h)
+}
+/** a double integral by nested Simpson's rule: x from a to b, y from lo(x) to hi(x) */
+export function double(src: string, a: number, b: number, lo: (x: number) => number, hi: (x: number) => number, n = 40): number {
+  const inner = (x: number) => {
+    const y0 = lo(x), y1 = hi(x), h = (y1 - y0) / n
+    let t = at2(src, x, y0) + at2(src, x, y1)
+    for (let i = 1; i < n; i++) t += at2(src, x, y0 + i * h) * (i % 2 ? 4 : 2)
+    return (t * h) / 3
+  }
+  const h = (b - a) / n
+  let s = inner(a) + inner(b)
+  for (let i = 1; i < n; i++) s += inner(a + i * h) * (i % 2 ? 4 : 2)
+  return (s * h) / 3
+}
 
 export function sameFormula(a: string, b: string, pos = false, dom?: [number, number]): boolean {
   let n = 0
@@ -54,6 +90,13 @@ export function checkCalc(spec: CalcSpec, raw: string): { ok: boolean; invalid?:
   let text = raw.trim().replace(/ln\|([^|]+)\|/gi, 'ln(abs($1))').replace(/^\s*(?:d\d?y\s*\/\s*d[a-z]\d?|(?:f|y|g|h)\s*['′’]*\s*(?:\([a-z]\))?)\s*=(?!=)/i, '').trim()
   if (spec.plusC) text = text.replace(/\s*\+\s*[ck]\s*$/i, '')
   if (!text) return { ok: false, invalid: true, note: 'Type an answer first.' }
+  if (spec.two) {
+    try { at2(text, 1.2, 0.7) } catch (e) {
+      if (e instanceof ParseError) return { ok: false, invalid: true, note: 'Could not read that. Write products side by side or with *, powers with ^, and functions with brackets: 2xy, 3y^2, e^(xy), sin(xy), ln(x^2+y^2).' }
+      throw e
+    }
+    return sameFormula2(text, spec.answer) ? { ok: true } : { ok: false }
+  }
   try { at(text, spec.dom ? (spec.dom[0] + spec.dom[1]) / 2 : spec.pos ? 0.81 : 1.23) } catch (e) {
     if (e instanceof ParseError) return { ok: false, invalid: true, note: 'Could not read that. Write products side by side or with *, powers with ^, and functions with brackets: 3x^2, 2x*e^x, sin(2x), ln(x), sqrt(x), e^(3x).' }
     throw e
@@ -108,7 +151,7 @@ export function numLimit(src: string, a: number, dir: 'both' | 'left' | 'right' 
 
 /** typeset an ASCII formula for the screen */
 export function showF(src: string): string {
-  return showTrig(src.replace(/\*(?=[a-z])/g, ' '))
+  return showTrig(src.replace(/(?<![a-z])([xy\d])\*(?=[xy](?![a-z]))/g, '$1').replace(/(?<![a-z])([xy\d])\*(?=[xy](?![a-z]))/g, '$1').replace(/\*(?=[a-z])/g, ' '))
     .replace(/asin\(/g, 'sin⁻¹(').replace(/acos\(/g, 'cos⁻¹(').replace(/atan\(/g, 'tan⁻¹(')
     .replace(/sqrt\(/g, '√(').replace(/cbrt\(/g, '∛(')
     .replace(/ln\(abs\(([^()]+)\)\)/g, 'ln|$1|').replace(/(?<![a-z])ln\(([a-z])\)/g, 'ln $1')

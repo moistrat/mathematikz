@@ -108,6 +108,37 @@ export function areaPool(r: Rng): [string, string, string, number, number][] {
 }
 function frText(n: number, d: number): string { const g = (x: number, y: number): number => (y === 0 ? x : g(y, x % y)); const c = g(n, d); return d / c === 1 ? String(n / c) : `${n / c}/${d / c}` }
 
+/* Unit 11 pools */
+const g2 = (x: number, y: number): number => (y === 0 ? Math.abs(x) : g2(y, x % y))
+const fracT = (n: number, d: number) => { const c = g2(Math.abs(n), d); return d / c === 1 ? String(n / c) : `${n / c}/${d / c}` }
+/** [series as text, sum as text, term for the check, first n, ratio info] */
+export function seriesSumPool(r: Rng): [string, string, number][] {
+  const out: [string, string, number][] = []
+  for (let i = 0; i < 80; i++) {
+    const a = ri(r, 1, 9), d = ri(r, 2, 6), k = ri(r, 1, 4), n1 = ri(r, 1, 4)
+    out.push([`Σ (n ≥ 0) of ${a}(1/${d})ⁿ`, fracT(a * d, d - 1), 1000 * a + d])
+    out.push([`Σ (n ≥ 1) of 1/(n(n + ${k}))`, (() => { let h = 0; let nn = 0, dd = 1; for (let j = 1; j <= k; j++) { nn = nn * j + dd; dd *= j } h = nn; return fracT(h, dd * k) })(), 1e6 + k])
+    out.push([`Σ (n ≥ 1) of ${n1}/${d}ⁿ`, fracT(n1, d - 1), 2e6 + n1 * 100 + d])
+  }
+  return out
+}
+export function radiusPool(r: Rng): [string, string][] {
+  const out: [string, string][] = []
+  for (let i = 0; i < 60; i++) {
+    const c = ri(r, 2, 9), p = ri(r, 1, 3)
+    out.push([`Σ xⁿ/${c}ⁿ`, String(c)], [`Σ n xⁿ/${c}ⁿ`, String(c)], [`Σ ${c}ⁿ xⁿ`, `1/${c}`], [`Σ xⁿ/(n${p === 1 ? '' : '^' + p} ${c}ⁿ)`.replace('^2', '²').replace('^3', '³'), String(c)], [`Σ (${c}x)ⁿ/n!`, '∞'], [`Σ n! xⁿ/${c}ⁿ`, '0'])
+  }
+  return out
+}
+export function partialPool(r: Rng): [string, string, string][] {
+  const out: [string, string, string][] = []
+  for (let i = 0; i < 60; i++) {
+    const a = ri(r, 2, 6), b = ri(r, 2, 6), n = ri(r, 2, 4)
+    out.push([`${a}x^${n}*y+${b}y`, `${a * n}x^${n - 1}*y`.replace('x^1*', 'x*'), 'x'], [`${a}x*y^${n}`, `${a}x*${n}y^${n - 1}`.replace(`${a}x*${n}`, `${a * n}x*`).replace('y^1', 'y'), 'y'], [`sin(${a}x*y)`, `${a}y*cos(${a}x*y)`, 'x'], [`e^(${a}x+y)`, `${a}e^(${a}x+y)`, 'x'], [`x^2+${a}x*y+y^2`, `x*2+${a}y`.replace('x*2', '2x'), 'x'], [`ln(x^2+${a}y)`, `2x/(x^2+${a}y)`, 'x'])
+  }
+  return out
+}
+
 const tidy = (t: string) => showF(t).replace(/−/g, '−')
 
 export const DECKS: Deck[] = [
@@ -361,6 +392,18 @@ export const DECKS: Deck[] = [
   {
     id: 'area-values', name: 'Areas under curves', blurb: 'Pair each region with its area.',
     make: (r, n) => draw(r, areaPool(r).map(([d, v]) => [d, v] as [string, string]), n),
+  },
+  {
+    id: 'series-sums-infinite', name: 'Sums of infinite series', blurb: 'Pair each convergent series with its sum.',
+    make: (r, n) => draw(r, seriesSumPool(r).map(([t, v]) => [t, v] as [string, string]), n),
+  },
+  {
+    id: 'radii-convergence', name: 'Radius of convergence', blurb: 'Pair each power series with its radius of convergence.',
+    make: (r, n) => draw(r, radiusPool(r), n),
+  },
+  {
+    id: 'partial-pairs', name: 'Partial derivatives', blurb: 'Pair each function with its partial derivative with respect to x.',
+    make: (r, n) => draw(r, partialPool(r).filter(([, , v]) => v === 'x').map(([f, d]) => [`∂/∂x of ${tidy(f)}`, tidy(d)] as [string, string]), n),
   },
 ]
 
