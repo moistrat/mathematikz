@@ -349,3 +349,21 @@ describe('unit 11 decks', () => {
     for (const id of ['series-sums-infinite', 'radii-convergence', 'partial-pairs']) for (let s = 1; s <= 30; s++) { const b = buildBoard(id, 6, s * 13); expect(b.length, id).toBe(12); expect(new Set(b.map((t) => t.text)).size, id).toBe(12) }
   })
 })
+
+describe('unit 12 decks', () => {
+  it('determinants, characteristic roots and probabilities are right', async () => {
+    const { detPool, odePool, probPool } = await import('./games')
+    const { mulberry } = await import('./rng')
+    for (let sd = 1; sd <= 4; sd++) {
+      for (const [m, d] of detPool(mulberry(sd))) {
+        const v = m.length === 2 ? m[0][0] * m[1][1] - m[0][1] * m[1][0] : m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0])
+        expect(v).toBe(d)
+      }
+      for (const [b, c, p, q] of odePool(mulberry(sd))) { expect(p * p + b * p + c).toBe(0); expect(q * q + b * q + c).toBe(0) }
+      for (const [t, v, f] of probPool(mulberry(sd))) { const [nn, dd] = v.includes('/') ? v.split('/').map(Number) : [Number(v), 1]; expect(Math.abs(f() - nn / dd), t).toBeLessThan(1e-12) }
+    }
+  })
+  it('the decks build', () => {
+    for (const id of ['determinant-values', 'characteristic-roots', 'probability-values']) for (let s = 1; s <= 30; s++) { const b = buildBoard(id, 6, s * 13); expect(b.length, id).toBe(12); expect(new Set(b.map((t) => t.text)).size, id).toBe(12) }
+  })
+})

@@ -11,6 +11,7 @@ import { checkCalc, CalcSpec } from './calculus'
 import { CALC_GENS } from './calcQuestions'
 import { CX_GENS } from './cxQuestions'
 import { ADV_GENS } from './advQuestions'
+import { FIN_GENS } from './finalQuestions'
 import { INT_GENS } from './intQuestions'
 import { SEQ_GENS } from './seqQuestions'
 import { TRIG2_GENS } from './trigQuestions'
@@ -598,7 +599,7 @@ const TRIG_GENS: Gen[] = [
   } },
 ]
 
-const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS, ...SEQ_GENS, ...CX_GENS, ...CALC_GENS, ...INT_GENS, ...ADV_GENS]
+const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS, ...SEQ_GENS, ...CX_GENS, ...CALC_GENS, ...INT_GENS, ...ADV_GENS, ...FIN_GENS]
 
 /* ------------------------------------------------------------------ public API */
 

@@ -27,6 +27,8 @@ Seven units are built.
 
 - **Unit 11, series and advanced calculus**: 5 lessons, 5 interactive figures (partial sums, Taylor polynomials, interval of convergence, gradient on a contour map, double-integral grid), about 45 generators with convergence, series and two-variable checkers, and 3 more match-up decks.
 
+- **Unit 12, differential equations, linear algebra, probability and statistics**: 6 lessons, 6 interactive figures (slope field and Euler, damped oscillator, matrix transformation, binomial distribution, normal distribution, regression), about 50 generators, and 3 more match-up decks. **All twelve units of the course map are now built.**
+
 Explore still only has the unit-circle tools. A Games page (Sprint, Survival, Match-up, Root hunter) is live.
 
 ## Pages
@@ -58,7 +60,7 @@ Each unit follows the same recipe: lessons with worked examples, a table or form
 | 9 | Limits and derivatives: definition, rules, chain rule, implicit, applications (optimisation, related rates) | built |
 | 10 | Integrals: antiderivatives, substitution, by parts, partial fractions, areas and volumes | built |
 | 11 | Series and advanced calculus: convergence tests, Taylor series, multivariable, partial derivatives, multiple integrals | built |
-| 12 | Differential equations, linear algebra, probability and statistics | next |
+| 12 | Differential equations, linear algebra, probability and statistics | built |
 
 Games already live: Sprint, Survival, Match-up (three decks), Root hunter. Each new unit adds a match-up deck and its generators automatically join Sprint and Survival.
 

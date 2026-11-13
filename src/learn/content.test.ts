@@ -16,8 +16,8 @@ describe('course content', () => {
       expect(l.blocks.filter((b) => b.t === 'widget').length, l.id).toBeGreaterThanOrEqual(1)
       expect(l.blocks.filter((b) => b.t === 'example').length, l.id).toBeGreaterThanOrEqual(2)
     }
-    expect(UNITS.length).toBeGreaterThanOrEqual(11)
-    expect(LESSONS.length).toBeGreaterThanOrEqual(57)
+    expect(UNITS.length).toBeGreaterThanOrEqual(12)
+    expect(LESSONS.length).toBeGreaterThanOrEqual(63)
   })
   it('check questions are well formed', () => {
     for (const l of LESSONS) for (const b of l.blocks) {
@@ -37,6 +37,6 @@ describe('course content', () => {
   })
   it('every widget used in a lesson exists', async () => {
     const used = new Set(LESSONS.flatMap((l) => l.blocks.flatMap((b) => (b.t === 'widget' ? [b.id] : []))))
-    expect([...used].sort()).toEqual(['ambiguous', 'accumulate', 'argand', 'astc', 'betweencurves', 'boxopt', 'asymptotes', 'composer', 'converter', 'cobweb', 'convinterval', 'crosslab', 'cubicroots', 'derivgraph', 'domainrange', 'doubleint', 'explog', 'family', 'exprlab', 'gradlab', 'graphsolve', 'holes', 'identity', 'implicitlab', 'inverse', 'invgraph', 'ladder', 'limitlab', 'lineargraph', 'loglab', 'polysketch', 'quadlab', 'rootsunity', 'radians', 'radicalfactor', 'partialsums', 'partsteps', 'pascal', 'ratgraph', 'reference', 'revolve', 'riemann', 'rtri', 'secantlab', 'seqlab', 'seriesconv', 'signchart', 'substeps', 'systemslab', 'taylorlab', 'transform', 'triangles', 'trigsolve', 'unitcircle', 'vectorlab', 'wave'].sort())
+    expect([...used].sort()).toEqual(['ambiguous', 'accumulate', 'argand', 'astc', 'betweencurves', 'boxopt', 'asymptotes', 'binomlab', 'composer', 'converter', 'cobweb', 'convinterval', 'crosslab', 'cubicroots', 'derivgraph', 'domainrange', 'doubleint', 'explog', 'family', 'exprlab', 'gradlab', 'graphsolve', 'holes', 'identity', 'implicitlab', 'inverse', 'invgraph', 'ladder', 'limitlab', 'lineargraph', 'loglab', 'matrixlab', 'normallab', 'oscillator', 'polysketch', 'quadlab', 'rootsunity', 'radians', 'radicalfactor', 'partialsums', 'partsteps', 'pascal', 'ratgraph', 'reference', 'regression', 'revolve', 'riemann', 'rtri', 'secantlab', 'seqlab', 'seriesconv', 'signchart', 'slopefield', 'substeps', 'systemslab', 'taylorlab', 'transform', 'triangles', 'trigsolve', 'unitcircle', 'vectorlab', 'wave'].sort())
   })
 })

@@ -116,3 +116,42 @@ export function pdSpec(prompt: string, source: string, answer: string, wrt: 'x' 
 }
 import { XY, numPartial } from './calculus'
 import { evaluate } from './parse'
+
+/* ------------------------------------------------------------------ Unit 12 helpers */
+
+/** a Frac as ASCII: 3, (3/2) or (-3/2) */
+export const fc = (f: Frac) => (f.d === 1 ? (f.n < 0 ? `(${f.n})` : String(f.n)) : `(${f.n}/${f.d})`)
+/** does y(x) solve y' = rhs(x, y) at several x, with y(x0) = y0? */
+export function solves1(y: string, rhs: (x: number, y: number) => number, ic: [number, number], xs = [0.3, 0.6, 0.9, 1.2]) {
+  must(Math.abs(evaluate(y, { x: ic[0] }) - ic[1]) < 1e-9 * (1 + Math.abs(ic[1])), `${y} does not satisfy y(${ic[0]}) = ${ic[1]}`)
+  for (const x of xs) {
+    const yy = evaluate(y, { x }), d = numDeriv1(y, x)
+    must(Math.abs(d - rhs(x, yy)) < 1e-4 * (1 + Math.abs(d)), `${y} does not solve the equation at x = ${x}: ${d} vs ${rhs(x, yy)}`)
+  }
+}
+const numDeriv1 = (src: string, x: number) => { const h = 1e-5; return (evaluate(src, { x: x + h }) - evaluate(src, { x: x - h })) / (2 * h) }
+const numDeriv2 = (src: string, x: number) => { const h = 1e-3; return (evaluate(src, { x: x + h }) - 2 * evaluate(src, { x }) + evaluate(src, { x: x - h })) / (h * h) }
+/** does y(x) solve y'' + p y' + q y = f(x), with y(0) = y0 and y'(0) = yp0 (when given)? */
+export function solves2(y: string, p: number, q: number, f: (x: number) => number, ic?: [number, number]) {
+  if (ic) {
+    must(Math.abs(evaluate(y, { x: 0 }) - ic[0]) < 1e-9 * (1 + Math.abs(ic[0])), `${y}(0) should be ${ic[0]}`)
+    must(Math.abs(numDeriv1(y, 0) - ic[1]) < 1e-4 * (1 + Math.abs(ic[1])), `${y}'(0) should be ${ic[1]}`)
+  }
+  for (const x of [0.2, 0.5, 0.8, 1.1]) {
+    const d2 = numDeriv2(y, x), d1 = numDeriv1(y, x), y0 = evaluate(y, { x })
+    const lhs = d2 + p * d1 + q * y0, scale = Math.abs(d2) + Math.abs(p * d1) + Math.abs(q * y0) + Math.abs(f(x))
+    must(Math.abs(lhs - f(x)) < 2e-5 * scale + 2e-3, `${y} does not solve the ODE at x = ${x}: ${lhs} vs ${f(x)}`)
+  }
+}
+/** an ordered tuple of exact fractions (a matrix written row by row, a vector, a point) */
+export function tupleSpec(prompt: string, vals: Frac[], hint: string, expl: string[]): Spec {
+  const nonTerm = (f: Frac) => { let d = f.d; while (d % 2 === 0) d /= 2; while (d % 5 === 0) d /= 5; return d !== 1 }
+  return { prompt, kind: 'pair', answers: vals.map(fNum), display: `(${vals.map(fm).join(', ')})`, input: `(${vals.map((v) => fm(v).replace(MINUS, '-')).join(', ')})`, unit: '', needsExact: vals.some(nonTerm), tol: 1e-9, hint, explanation: expl, pad: { pi: false, root: false, comma: true, alg: true } }
+}
+/** a matrix as text: [[1, 2], [3, 4]] */
+export const matText = (m: number[][]) => `[${m.map((r) => `[${r.map((v) => MN(String(v))).join(', ')}]`).join(', ')}]`
+
+/** y″ + p y′ + q y as text */
+export const odeText = (p: number, q: number) => `y″${p === 0 ? '' : ` ${p < 0 ? '−' : '+'} ${Math.abs(p) === 1 ? '' : Math.abs(p)}y′`}${q === 0 ? '' : ` ${q < 0 ? '−' : '+'} ${Math.abs(q) === 1 ? '' : Math.abs(q)}y`}`
+/** clean up the text of a question: no "+ −", "− −", or coefficient 1 in front of a letter */
+export const tidyText = (t: string) => t.replace(/\+ −/g, '− ').replace(/− −/g, '+ ').replace(/\+ -/g, '− ').replace(/(?<![\d./^])1(?=[xyzr](?![a-z]))/g, '').replace(/\s{2,}/g, ' ')

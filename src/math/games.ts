@@ -139,6 +139,39 @@ export function partialPool(r: Rng): [string, string, string][] {
   return out
 }
 
+/* Unit 12 pools */
+export function detPool(r: Rng): [number[][], number][] {
+  const out: [number[][], number][] = []
+  const d3 = (m: number[][]) => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0])
+  for (let i = 0; i < 80; i++) {
+    const m2 = [[ri(r, -5, 6), ri(r, -5, 6)], [ri(r, -5, 6), ri(r, -5, 6)]]
+    out.push([m2, m2[0][0] * m2[1][1] - m2[0][1] * m2[1][0]])
+    const m3 = Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => ri(r, -3, 4)))
+    out.push([m3, d3(m3)])
+  }
+  return out
+}
+export function odePool(r: Rng): [number, number, number, number][] {
+  const out: [number, number, number, number][] = []
+  for (let i = 0; i < 60; i++) { const a = ri(r, -5, 5), b = ri(r, -5, 5); if (a < b) out.push([-(a + b), a * b, a, b]) }
+  return out
+}
+export function probPool(r: Rng): [string, string, () => number][] {
+  const out: [string, string, () => number][] = []
+  const gg = (x: number, y: number): number => (y === 0 ? x : gg(y, x % y))
+  const ft = (n: number, d: number) => { const c = gg(n, d); return d / c === 1 ? String(n / c) : `${n / c}/${d / c}` }
+  for (let i = 0; i < 40; i++) {
+    const s = ri(r, 2, 12), n = ri(r, 3, 6), k = ri(r, 0, n)
+    const ways = s <= 7 ? s - 1 : 13 - s
+    out.push([`Two dice show a total of ${s}`, ft(ways, 36), () => { let c = 0; for (let a = 1; a <= 6; a++) for (let b = 1; b <= 6; b++) if (a + b === s) c++; return c / 36 }])
+    let cnt = 0; for (let j = 0; j <= k; j++) cnt += 0
+    void cnt
+    let ch = 1; for (let j = 1; j <= k; j++) ch = (ch * (n - k + j)) / j
+    out.push([`Exactly ${k} head${k === 1 ? '' : 's'} in ${n} tosses of a fair coin`, ft(Math.round(ch), 2 ** n), () => { let c = 0; for (let m = 0; m < 2 ** n; m++) { let h = 0; for (let b = 0; b < n; b++) h += (m >> b) & 1; if (h === k) c++ } return c / 2 ** n }])
+  }
+  return out
+}
+
 const tidy = (t: string) => showF(t).replace(/−/g, '−')
 
 export const DECKS: Deck[] = [
@@ -404,6 +437,18 @@ export const DECKS: Deck[] = [
   {
     id: 'partial-pairs', name: 'Partial derivatives', blurb: 'Pair each function with its partial derivative with respect to x.',
     make: (r, n) => draw(r, partialPool(r).filter(([, , v]) => v === 'x').map(([f, d]) => [`∂/∂x of ${tidy(f)}`, tidy(d)] as [string, string]), n),
+  },
+  {
+    id: 'determinant-values', name: 'Determinants', blurb: 'Pair each matrix with its determinant.',
+    make: (r, n) => draw(r, detPool(r).map(([m, d]) => [`det [${m.map((row) => `[${row.join(', ').replace(/-/g, '−')}]`).join(', ')}]`, String(d).replace('-', '−')] as [string, string]), n),
+  },
+  {
+    id: 'characteristic-roots', name: 'Second-order equations and their roots', blurb: 'Pair each equation y″ + by′ + cy = 0 with the roots of its characteristic equation.',
+    make: (r, n) => draw(r, odePool(r).map(([b, c, p, q]) => [`y″ ${b < 0 ? '−' : b === 0 ? '' : '+'} ${b === 0 ? '' : `${Math.abs(b) === 1 ? '' : Math.abs(b)}y′ `}${c < 0 ? '−' : '+'} ${Math.abs(c) === 1 ? '' : Math.abs(c)}y = 0`.replace(/\s+/g, ' ').replace('y″  ', 'y″ '), `r = ${String(p).replace('-', '−')}, ${String(q).replace('-', '−')}`] as [string, string]), n),
+  },
+  {
+    id: 'probability-values', name: 'Probabilities', blurb: 'Pair each event with its probability.',
+    make: (r, n) => draw(r, probPool(r).map(([t, v]) => [t, v] as [string, string]), n),
   },
 ]
 
