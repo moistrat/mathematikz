@@ -12,6 +12,8 @@ export interface CalcSpec {
   answer: string
   /** only sample positive x (the formula involves ln or a square root) */
   pos?: boolean
+  /** the answer is an antiderivative: any constant of integration may be added or left out */
+  plusC?: boolean
   /** sample only inside this open interval of x (for example (−1/2, 1/2) for sin⁻¹(2x)) */
   dom?: [number, number]
   /** values of x that must be avoided (where the formula is undefined) are skipped automatically */
@@ -35,12 +37,30 @@ export function sameFormula(a: string, b: string, pos = false, dom?: [number, nu
   return n >= 5
 }
 
+/** two formulas that differ by a constant (they may disagree by any fixed number, but never by a varying amount) */
+export function sameUpToConstant(a: string, b: string, pos = false, dom?: [number, number]): boolean {
+  const ds: number[] = []
+  for (const x of samplesFor(pos, dom)) {
+    let u: number, v: number
+    try { u = at(a, x); v = at(b, x) } catch (e) { if (e instanceof ParseError) continue; throw e }
+    if (Number.isFinite(u) && Number.isFinite(v)) ds.push(u - v)
+  }
+  if (ds.length < 5) return false
+  const m = ds[0]
+  return ds.every((d) => Math.abs(d - m) < 1e-7 * (1 + Math.abs(m) + Math.abs(d)))
+}
+
 export function checkCalc(spec: CalcSpec, raw: string): { ok: boolean; invalid?: boolean; note?: string } {
-  const text = raw.trim().replace(/^\s*(?:d\d?y\s*\/\s*d[a-z]\d?|(?:f|y|g|h)\s*['′’]*\s*(?:\([a-z]\))?)\s*=(?!=)/i, '').trim()
+  let text = raw.trim().replace(/ln\|([^|]+)\|/gi, 'ln(abs($1))').replace(/^\s*(?:d\d?y\s*\/\s*d[a-z]\d?|(?:f|y|g|h)\s*['′’]*\s*(?:\([a-z]\))?)\s*=(?!=)/i, '').trim()
+  if (spec.plusC) text = text.replace(/\s*\+\s*[ck]\s*$/i, '')
   if (!text) return { ok: false, invalid: true, note: 'Type an answer first.' }
   try { at(text, spec.dom ? (spec.dom[0] + spec.dom[1]) / 2 : spec.pos ? 0.81 : 1.23) } catch (e) {
     if (e instanceof ParseError) return { ok: false, invalid: true, note: 'Could not read that. Write products side by side or with *, powers with ^, and functions with brackets: 3x^2, 2x*e^x, sin(2x), ln(x), sqrt(x), e^(3x).' }
     throw e
+  }
+  if (spec.plusC) {
+    if (!sameUpToConstant(text, spec.answer, spec.pos, spec.dom)) return { ok: false, note: /\bd\/dx|′|'/.test(text) ? undefined : 'Differentiate your answer: you should get back the function you were asked to integrate.' }
+    return { ok: true }
   }
   if (!sameFormula(text, spec.answer, spec.pos, spec.dom)) return { ok: false }
   if (norm(text) === norm(spec.source) && norm(spec.source) !== norm(spec.answer)) return { ok: false, note: 'That is the question written back. Differentiate it.' }
@@ -91,6 +111,14 @@ export function showF(src: string): string {
   return showTrig(src.replace(/\*(?=[a-z])/g, ' '))
     .replace(/asin\(/g, 'sin⁻¹(').replace(/acos\(/g, 'cos⁻¹(').replace(/atan\(/g, 'tan⁻¹(')
     .replace(/sqrt\(/g, '√(').replace(/cbrt\(/g, '∛(')
-    .replace(/(?<![a-z])ln\(([a-z])\)/g, 'ln $1')
+    .replace(/ln\(abs\(([^()]+)\)\)/g, 'ln|$1|').replace(/(?<![a-z])ln\(([a-z])\)/g, 'ln $1')
     .replace(/(?<![a-z])e\^x(?![a-z\d^])/g, 'eˣ')
+}
+
+/** Simpson's rule for the integral of an ASCII function (the independent check for definite integrals) */
+export function simpson(src: string, a: number, b: number, n = 2000): number {
+  const h = (b - a) / n
+  let s = at(src, a) + at(src, b)
+  for (let i = 1; i < n; i++) s += at(src, a + i * h) * (i % 2 ? 4 : 2)
+  return (s * h) / 3
 }

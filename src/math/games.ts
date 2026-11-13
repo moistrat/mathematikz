@@ -7,6 +7,7 @@ import {
   cosExact, fmtDeg, fmtPi, fmtSurd, sinExact, SPECIAL_DEGREES, tanExact,
 } from './exact'
 import { showF } from './calculus'
+import { antiP } from './intAnti'
 import { mulberry, pick, Rng, shuffle } from './rng'
 import { fmtIntervals, fmtSet, IntervalSet } from './solve'
 import { COMPOUND, IDENTITIES } from './trigQuestions'
@@ -67,6 +68,46 @@ export function tangentPool(r: Rng): [string, string][] {
   }
   return out
 }
+
+/* Unit 10 pools */
+export function antiPool(r: Rng): [string, string][] {
+  const out: [string, string][] = []
+  const g = (x: number, y: number): number => (y === 0 ? Math.abs(x) : g(y, x % y))
+  for (let i = 0; i < 60; i++) {
+    const a = ri(r, 2, 9), n = ri(r, 2, 6), k = ri(r, 2, 6), b = ri(r, 1, 6)
+    out.push([`${a}x^${n}`, antiP([...Array(n).fill(0), a])])
+    out.push([`sin(${k}x)`, `-cos(${k}x)/${k}`], [`cos(${k}x)`, `sin(${k}x)/${k}`], [`e^(${k}x)`, `e^(${k}x)/${k}`])
+    out.push([`(x+${b})^${n}`, `(x+${b})^${n + 1}/${n + 1}`], [`${k}/x`, `${k}ln(abs(x))`], [`${a}x+${b}`, antiP([b, a])], [`sec(x)^2+${a}`, `tan(x)+${a}x`])
+    void g
+  }
+  return out
+}
+/** [integrand, from, to, value as text] */
+export function defPool(r: Rng): [string, number, number, string][] {
+  const out: [string, number, number, string][] = []
+  for (let i = 0; i < 80; i++) {
+    const k = ri(r, 1, 6), n = ri(r, 1, 4), a = ri(r, 1, 4), b = a + ri(r, 1, 3)
+    const num = k * (b ** (n + 1) - a ** (n + 1)), den = n + 1
+    const gg = (x: number, y: number): number => (y === 0 ? x : gg(y, x % y)), d = gg(Math.abs(num), den)
+    out.push([`${k === 1 ? '' : k}x^${n}`, a, b, den / d === 1 ? String(num / d) : `${num / d}/${den / d}`])
+    out.push([`${k}`, 0, a, String(k * a)])
+    out.push([`sin(${k}x)`, 0, 0, '0'])
+  }
+  return out.filter((e) => !(e[1] === 0 && e[2] === 0))
+}
+/** [description, value as text, check integrand ascii, from, to] for areas between curves */
+export function areaPool(r: Rng): [string, string, string, number, number][] {
+  const out: [string, string, string, number, number][] = []
+  for (let i = 0; i < 60; i++) {
+    const k = ri(r, 2, 9), a = ri(r, 1, 5)
+    out.push([`Area between y = x² and y = ${k}x`, frText(k ** 3, 6), `${k}x-x^2`, 0, k])
+    out.push([`Area under y = x² from 0 to ${a}`, frText(a ** 3, 3), 'x^2', 0, a])
+    out.push([`Area under y = ${k}x from 0 to ${a}`, frText(k * a * a, 2), `${k}x`, 0, a])
+  }
+  return out
+}
+function frText(n: number, d: number): string { const g = (x: number, y: number): number => (y === 0 ? x : g(y, x % y)); const c = g(n, d); return d / c === 1 ? String(n / c) : `${n / c}/${d / c}` }
+
 const tidy = (t: string) => showF(t).replace(/−/g, '−')
 
 export const DECKS: Deck[] = [
@@ -308,6 +349,18 @@ export const DECKS: Deck[] = [
   {
     id: 'tangent-gradients', name: 'Gradients of tangents', blurb: 'Pair each curve and point with the gradient of the tangent there.',
     make: (r, n) => draw(r, tangentPool(r).map(([f, v]) => [`Gradient of y = ${tidy(f)}`, v.replace('-', '−')] as [string, string]), n),
+  },
+  {
+    id: 'antiderivative-pairs', name: 'Functions and their integrals', blurb: 'Pair each function with its antiderivative (leave out the + C).',
+    make: (r, n) => draw(r, antiPool(r).map(([f, F]) => [tidy(f), tidy(F)] as [string, string]), n),
+  },
+  {
+    id: 'definite-values', name: 'Definite integrals and their values', blurb: 'Pair each definite integral with its value.',
+    make: (r, n) => draw(r, defPool(r).map(([f, a, b, v]) => [`∫ from ${a} to ${b} of ${tidy(f)} dx`, v] as [string, string]), n),
+  },
+  {
+    id: 'area-values', name: 'Areas under curves', blurb: 'Pair each region with its area.',
+    make: (r, n) => draw(r, areaPool(r).map(([d, v]) => [d, v] as [string, string]), n),
   },
 ]
 

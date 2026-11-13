@@ -299,3 +299,24 @@ describe('unit 9 decks', () => {
     }
   })
 })
+
+describe('unit 10 decks', () => {
+  const val = (t: string) => (t.includes('/') ? t.split('/').map(Number).reduce((x, y) => x / y) : Number(t))
+  it('antiderivatives are right', async () => {
+    const { antiPool } = await import('./games')
+    const { mulberry } = await import('./rng')
+    for (let sd = 1; sd <= 5; sd++) for (const [f, F] of antiPool(mulberry(sd))) expect(isDerivative(F, f, 1, /ln/.test(F)), `${F} -> ${f}`).toBe(true)
+  })
+  it('definite integrals and areas are right', async () => {
+    const { defPool, areaPool } = await import('./games')
+    const { mulberry } = await import('./rng')
+    const { simpson } = await import('./calculus')
+    for (let sd = 1; sd <= 5; sd++) {
+      for (const [f, a, b, v] of defPool(mulberry(sd))) expect(Math.abs(simpson(f, a, b, 200) - val(v)), `${f} ${a}..${b}`).toBeLessThan(1e-4)
+      for (const [d, v, f, a, b] of areaPool(mulberry(sd))) expect(Math.abs(simpson(f, a, b, 200) - val(v)), d).toBeLessThan(1e-4)
+    }
+  })
+  it('the decks build', () => {
+    for (const id of ['antiderivative-pairs', 'definite-values', 'area-values']) for (let s = 1; s <= 30; s++) { const b = buildBoard(id, 6, s * 13); expect(b.length).toBe(12); expect(new Set(b.map((t) => t.text)).size).toBe(12) }
+  })
+})

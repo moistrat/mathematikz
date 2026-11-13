@@ -1,6 +1,7 @@
 import { WidgetId } from '../types'
 import { CubicRoots, ExprLab, Holes, RatGraph } from './Algebra'
 import { Converter, Radians } from './Angles'
+import { AccumLab, BetweenLab, FamilyLab, PartSteps, RevolveLab, RiemannLab, SubSteps } from './IntegralLab'
 import { BoxOpt, DerivGraph, ImplicitLab, Ladder, LimitLab, SecantLab } from './CalculusLab'
 import { Argand, CrossLab, RootsUnity, VectorLab } from './ComplexVec'
 import { Astc, Reference, Triangles, UnitCircle } from './Circle'
@@ -57,5 +58,12 @@ export function Widget({ id }: { id: WidgetId }) {
     case 'implicitlab': return <ImplicitLab />
     case 'boxopt': return <BoxOpt />
     case 'ladder': return <Ladder />
+    case 'family': return <FamilyLab />
+    case 'riemann': return <RiemannLab />
+    case 'accumulate': return <AccumLab />
+    case 'betweencurves': return <BetweenLab />
+    case 'revolve': return <RevolveLab />
+    case 'substeps': return <SubSteps />
+    case 'partsteps': return <PartSteps />
   }
 }

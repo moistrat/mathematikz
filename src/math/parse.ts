@@ -11,7 +11,7 @@ const TRIG: Record<string, (x: number) => number> = {
   sin: Math.sin, cos: Math.cos, tan: Math.tan, sec: (x) => 1 / Math.cos(x), csc: (x) => 1 / Math.sin(x), cot: (x) => 1 / Math.tan(x),
 }
 
-const WORDS = ['theta', 'degrees', 'radians', 'asin', 'acos', 'atan', 'sqrt', 'cbrt', 'root', 'sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'exp', 'log', 'rad', 'deg', 'ln', 'pi']
+const WORDS = ['theta', 'abs', 'degrees', 'radians', 'asin', 'acos', 'atan', 'sqrt', 'cbrt', 'root', 'sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'exp', 'log', 'rad', 'deg', 'ln', 'pi']
 
 function tokenize(src: string): Tok[] {
   const s = src
@@ -125,6 +125,7 @@ export function evaluate(src: string, env: Env = {}): number {
     if (k.v === 'e') return Math.E
     // a bracketed argument ends at its bracket, so ln(x)^2 means (ln x)^2; without brackets, ln x^2 means ln(x^2)
     const arg = () => (isOp('(') ? atom() : power())
+    if (k.v === 'abs') return Math.abs(arg())
     if (k.v === 'asin' || k.v === 'acos' || k.v === 'atan') { const v = arg(); return k.v === 'asin' ? Math.asin(v) : k.v === 'acos' ? Math.acos(v) : Math.atan(v) }
     if (k.v === 'cbrt') return Math.cbrt(arg())
     if (k.v === 'ln' || k.v === 'log' || k.v === 'exp') {

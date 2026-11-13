@@ -386,3 +386,9 @@ p.warn { margin: .6rem 0 0; }
 .pascal-cell { min-width: 2.2ch; padding: 0 .3ch; text-align: center; font-weight: 600; color: var(--text-dim); }
 .pascal-row.on .pascal-cell { color: var(--text); }
 .pascal-n { position: absolute; left: 6px; color: var(--text-faint); font-size: 11px; }
+
+/* step-by-step guides */
+.stepper-head { margin: 4px 0 0; font-size: 1.05rem; }
+.stepper-list { margin: 8px 0 4px 1.2em; padding: 0; display: grid; gap: 6px; }
+.stepper-list li { line-height: 1.45; }
+.seg button:disabled { opacity: 0.45; cursor: default; }

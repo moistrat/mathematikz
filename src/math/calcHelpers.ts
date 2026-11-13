@@ -2,7 +2,7 @@
 import { fmtFrac, Frac, fNum, fr } from './algebra'
 import { numSpec, ri, rnz } from './algebraQuestions'
 import { MN } from './equationQuestions'
-import { isDerivative, numLimit, showF, CalcSpec } from './calculus'
+import { isDerivative, numLimit, showF, simpson, CalcSpec } from './calculus'
 import { MINUS } from './exact'
 import type { Spec } from './questions'
 
@@ -11,7 +11,7 @@ export const fm = (f: Frac) => fmtFrac(f)
 export const must = (ok: boolean, what: string) => { if (!ok) throw new Error(`self-check failed: ${what}`) }
 export const w = (n: number) => (n < 0 ? `(${MN(String(n))})` : String(n))
 const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹'
-export const sup = (n: number) => String(n).split('').map((d) => SUP[Number(d)]).join('')
+export const sup = (n: number) => `${n < 0 ? '⁻' : ''}${String(Math.abs(n)).split('').map((d) => SUP[Number(d)]).join('')}`
 
 /** coefficient prefix: 1 -> '', -1 -> '-' */
 export const cof = (k: number) => (k === 1 ? '' : k === -1 ? '-' : String(k))
@@ -46,7 +46,7 @@ export function noneSpec(prompt: string, word: 'does not exist' | 'diverges', hi
 
 /** a numeric answer that is a multiple of π */
 export function piSpec(prompt: string, k: number, hint: string, expl: string[]): Spec {
-  return { prompt, kind: 'value', answers: [k * Math.PI], display: `${k}π`, input: `${k}pi`, unit: '', needsExact: true, tol: 1e-7, hint, explanation: expl, pad: { pi: true, root: false, comma: false, alg: true } }
+  return { prompt, kind: 'value', answers: [k * Math.PI], display: `${k === 1 ? '' : k}π`, input: k === 1 ? 'pi' : `${k}pi`, unit: '', needsExact: true, tol: 1e-7, hint, explanation: expl, pad: { pi: true, root: false, comma: false, alg: true } }
 }
 
 /** a formula answer (a derivative, say), checked at sample points, with a built-in independent check */
@@ -71,3 +71,32 @@ export function limitCheck(src: string, at: number, want: number | null, dir: 'b
 export { fr, fNum }
 export type { Spec }
 export const gcd = (a: number, b: number): number => (b === 0 ? Math.abs(a) : gcd(b, a % b))
+
+/** an indefinite integral: the answer is an antiderivative, and any constant may be added */
+export function intSpec(prompt: string, integrand: string, F: string, hint: string, expl: string[], opt: { pos?: boolean; dom?: [number, number] } = {}): Spec {
+  must(isDerivative(F, integrand, 1, opt.pos, opt.dom), `${F} is not an antiderivative of ${integrand}`)
+  const base = calcSpec(prompt, integrand, F, hint, expl, { ...opt, check: false })
+  return { ...base, display: `${S(F)} + C`, calc: { source: integrand, answer: F, pos: opt.pos, dom: opt.dom, plusC: true } }
+}
+
+/** a definite integral checked by Simpson's rule */
+export function defCheck(src: string, a: number, b: number, want: number) {
+  const got = simpson(src, a, b, 240)
+  must(Math.abs(got - want) < 1e-4 * (1 + Math.abs(want)), `∫ ${src} from ${a} to ${b} should be ${want}, Simpson says ${got}`)
+}
+
+/** an exact rational multiple of pi */
+export function fracPiSpec(prompt: string, f: { n: number; d: number }, hint: string, expl: string[]): Spec {
+  const v = (f.n / f.d) * Math.PI
+  const shown = f.d === 1 ? `${f.n === 1 ? '' : f.n}π` : `${f.n === 1 ? '' : f.n}π/${f.d}`
+  return { prompt, kind: 'value', answers: [v], display: shown.replace('-', MINUS), input: f.d === 1 ? `${f.n}pi` : `(${f.n}/${f.d})pi`, unit: '', needsExact: true, tol: 1e-7, hint, explanation: expl, pad: { pi: true, root: false, comma: false, alg: true } }
+}
+
+/** the integral of a polynomial (ascending integer coefficients) from a to b, exactly */
+export function polyDef(cs: number[], a: number, b: number): Frac {
+  let tot = fr(0)
+  const anti = (x: number) => cs.reduce((s, c, e) => fAddH(s, fr(c * x ** (e + 1), e + 1)), fr(0))
+  tot = fSubH(anti(b), anti(a))
+  return tot
+}
+import { fAdd as fAddH, fSub as fSubH } from './algebra'

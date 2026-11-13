@@ -23,6 +23,8 @@ Seven units are built.
 
 - **Unit 9, limits and derivatives**: 5 lessons, 6 interactive figures (approaching a limit, secant to tangent, function and derivative, circle tangent, open-box optimisation, sliding ladder), about 60 generators with a formula checker, and 3 more match-up decks.
 
+- **Unit 10, integration**: 5 lessons, 7 interactive figures (antiderivative family, Riemann sums, accumulated area, area between curves, solids of revolution, and step-by-step guides for substitution and by parts), about 45 generators with antiderivative and Simpson checks, and 3 more match-up decks.
+
 Explore still only has the unit-circle tools. A Games page (Sprint, Survival, Match-up, Root hunter) is live.
 
 ## Pages
@@ -52,8 +54,8 @@ Each unit follows the same recipe: lessons with worked examples, a table or form
 | 7 | Sequences, series and the binomial theorem | built |
 | 8 | Complex numbers and vectors | built |
 | 9 | Limits and derivatives: definition, rules, chain rule, implicit, applications (optimisation, related rates) | built |
-| 10 | Integrals: antiderivatives, substitution, by parts, partial fractions, areas and volumes | next |
-| 11 | Series and advanced calculus: convergence tests, Taylor series, multivariable, partial derivatives, multiple integrals | planned |
+| 10 | Integrals: antiderivatives, substitution, by parts, partial fractions, areas and volumes | built |
+| 11 | Series and advanced calculus: convergence tests, Taylor series, multivariable, partial derivatives, multiple integrals | next |
 | 12 | Differential equations, linear algebra, probability and statistics | planned |
 
 Games already live: Sprint, Survival, Match-up (three decks), Root hunter. Each new unit adds a match-up deck and its generators automatically join Sprint and Survival.
