@@ -3,6 +3,7 @@ import { CubicRoots, ExprLab, Holes, RatGraph } from './Algebra'
 import { ConvInterval, DoubleInt, GradLab, SeriesConv, TaylorLab } from './SeriesLab'
 import { BinomLab, MatrixLab, NormalLab, Oscillator, Regression, SlopeField } from './FinalLab'
 import { AreaModel, Balance, FractionBars, IneqLine, Meeting, NumberLine, RatioLab, SciNotation } from './BasicsLab'
+import { AngleLab, AreaLab, PythagLab, SectorLab, SimilarLab } from './GeoLab'
 import { BreakEven, LineForms, SlopeLab } from './LinesLab'
 import { Converter, Radians } from './Angles'
 import { AccumLab, BetweenLab, FamilyLab, PartSteps, RevolveLab, RiemannLab, SubSteps } from './IntegralLab'
@@ -91,5 +92,10 @@ export function Widget({ id }: { id: WidgetId }) {
     case 'slopelab': return <SlopeLab />
     case 'lineforms': return <LineForms />
     case 'breakeven': return <BreakEven />
+    case 'anglelab': return <AngleLab />
+    case 'pythaglab': return <PythagLab />
+    case 'arealab': return <AreaLab />
+    case 'similarlab': return <SimilarLab />
+    case 'sectorlab': return <SectorLab />
   }
 }

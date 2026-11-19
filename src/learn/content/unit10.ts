@@ -17,7 +17,7 @@ export const unit10: Unit = {
         { t: 'widget', id: 'family' },
         { t: 'table', head: ['f(x)', '∫ f(x) dx'], rows: [
           ['xⁿ  (n ≠ −1)', 'xⁿ⁺¹/(n + 1) + C'], ['1/x', 'ln|x| + C'], ['eˣ', 'eˣ + C'], ['aˣ', 'aˣ/ln a + C'], ['sin x', '−cos x + C'], ['cos x', 'sin x + C'], ['sec² x', 'tan x + C'], ['1/(1 + x²)', 'tan⁻¹ x + C'], ['1/√(1 − x²)', 'sin⁻¹ x + C'],
-        ], caption: 'Each line is a derivative from the last unit, read backwards. The rule for xⁿ: add 1 to the power and divide by the new power. It fails for n = −1, which is where ln|x| comes in.' },
+        ], caption: 'Each line is a derivative from the derivatives unit, read backwards. The rule for xⁿ: add 1 to the power and divide by the new power. It fails for n = −1, which is where ln|x| comes in.' },
         { t: 'callout', kind: 'key', title: 'Two rules and one check', text: 'A constant factor comes out, and a sum is integrated term by term: `∫ (a f + b g) dx = a ∫ f dx + b ∫ g dx`. There is no product or quotient rule for integrals. And you can **always check an answer by differentiating it**: you must get back the function you started with.' },
         { t: 'example', title: 'a polynomial', problem: 'Find ∫ (6x² − 4x + 5) dx.', steps: ['6x² → 6x³/3 = 2x³.', '−4x → −4x²/2 = −2x².', '5 → 5x.', 'Add the constant: 2x³ − 2x² + 5x + C. Check: differentiating gives 6x² − 4x + 5.'], answer: '2x³ − 2x² + 5x + C' },
         { t: 'example', title: 'reciprocals and roots', problem: 'Find ∫ (3/x² + √x) dx.', steps: ['Rewrite as powers: 3x⁻² + x^(1/2).', '3x⁻² → 3x⁻¹/(−1) = −3/x.', 'x^(1/2) → x^(3/2)/(3/2) = (2/3)x^(3/2).'], answer: '−3/x + (2/3)x^(3/2) + C' },

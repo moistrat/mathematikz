@@ -12,7 +12,7 @@ export const unit6: Unit = {
       minutes: 15,
       goals: ['Name the sides of a right-angled triangle and choose sin, cos or tan', 'Find an unknown side or angle', 'Use the 30-60-90 and 45-45-90 triangles for exact values', 'Solve elevation, depression and three-dimensional problems'],
       blocks: [
-        { t: 'p', text: 'Trigonometry began as a way of measuring heights and distances that cannot be measured directly: the width of a river, the height of a tower. In a right-angled triangle the **ratios of the sides depend only on the angles**, and the three ratios have names. Unit 1 defined sine and cosine on the unit circle; here they return to their original home.' },
+        { t: 'p', text: 'Trigonometry began as a way of measuring heights and distances that cannot be measured directly: the width of a river, the height of a tower. In a right-angled triangle the **ratios of the sides depend only on the angles**, and the three ratios have names. The unit circle unit defined sine and cosine; here they return to their original home.' },
         { t: 'h', text: 'The three ratios' },
         { t: 'p', text: 'Stand at one of the two acute angles, θ. The **hypotenuse** is the side opposite the right angle (the longest). The **opposite** side faces θ, and the **adjacent** side touches θ (and is not the hypotenuse).' },
         { t: 'formula', lines: ['sin θ = opposite / hypotenuse', 'cos θ = adjacent / hypotenuse', 'tan θ = opposite / adjacent'], caption: 'SOH CAH TOA. The same triangle gives the same ratios for every size, which is why the ratios depend only on θ.' },
@@ -26,7 +26,7 @@ export const unit6: Unit = {
         { t: 'example', title: 'an angle from two sides', problem: 'In a right-angled triangle the side opposite θ is 7 cm and the hypotenuse is 12 cm. Find θ.', steps: ['Opposite and hypotenuse: sin θ = 7/12 = 0.5833.', 'θ = sin⁻¹(0.5833) = 35.7° (1 d.p.).'], answer: 'θ = 35.7°' },
         { t: 'h', text: 'Two triangles with exact answers' },
         { t: 'p', text: 'Half of an equilateral triangle gives the 30-60-90 triangle with sides 1, √3, 2. Half of a square gives the 45-45-90 triangle with sides 1, 1, √2. Their ratios are exact and worth knowing.' },
-        { t: 'table', head: ['Angle', 'sin', 'cos', 'tan'], rows: [['30°', '1/2', '√3/2', '√3/3'], ['45°', '√2/2', '√2/2', '1'], ['60°', '√3/2', '1/2', '√3']], caption: 'These are the values from the unit circle in Unit 1, now seen as side ratios of the two special triangles.' },
+        { t: 'table', head: ['Angle', 'sin', 'cos', 'tan'], rows: [['30°', '1/2', '√3/2', '√3/3'], ['45°', '√2/2', '√2/2', '1'], ['60°', '√3/2', '1/2', '√3']], caption: 'These are the values from the unit circle unit, now seen as side ratios of the two special triangles.' },
         { t: 'example', title: 'an exact side', problem: 'A 30-60-90 triangle has hypotenuse 8 cm. Find the exact length of the side opposite the 60° angle.', steps: ['sin 60° = √3/2 = opposite / 8.', 'opposite = 8 × √3/2 = 4√3 cm.'], answer: '4√3 cm' },
         { t: 'h', text: 'Angles of elevation and depression' },
         { t: 'p', text: 'The **angle of elevation** is the angle above the horizontal when you look up at something; the **angle of depression** is the angle below the horizontal when you look down. They are measured from the **horizontal**, not the vertical. The angle of depression from A to B equals the angle of elevation from B to A (alternate angles between parallel horizontal lines).' },
@@ -103,7 +103,7 @@ export const unit6: Unit = {
         { t: 'example', title: 'a simple simplification', problem: 'Simplify (1 − cos²x) / sin x.', steps: ['1 − cos²x = sin²x by the Pythagorean identity.', 'sin²x / sin x = sin x.'], answer: 'sin x' },
         { t: 'example', title: 'adding fractions', problem: 'Simplify sin x/(1 + cos x) + (1 + cos x)/sin x.', steps: ['Common denominator sin x (1 + cos x): [sin²x + (1 + cos x)²] / [sin x (1 + cos x)].', 'Expand: sin²x + 1 + 2 cos x + cos²x = 2 + 2 cos x, using sin²x + cos²x = 1.', 'So the fraction is 2(1 + cos x) / [sin x (1 + cos x)] = 2 / sin x = 2 csc x.'], answer: '2 csc x' },
         { t: 'h', text: 'Finding all six from one' },
-        { t: 'p', text: 'If you know one function and the quadrant, you can find the rest. Use the Pythagorean identity for the size of the missing sine or cosine, and the quadrant (ASTC from Unit 1) for its sign.' },
+        { t: 'p', text: 'If you know one function and the quadrant, you can find the rest. Use the Pythagorean identity for the size of the missing sine or cosine, and the quadrant (ASTC, from the unit circle unit) for its sign.' },
         { t: 'example', title: 'from a sine and a quadrant', problem: 'sin θ = 5/13 and θ is in the second quadrant. Find cos θ, tan θ and sec θ.', steps: ['cos²θ = 1 − 25/169 = 144/169, so cos θ = ±12/13.', 'In quadrant II cosine is negative: cos θ = −12/13.', 'tan θ = sin θ / cos θ = (5/13) / (−12/13) = −5/12, and sec θ = 1 / cos θ = −13/12.'], answer: 'cos θ = −12/13, tan θ = −5/12, sec θ = −13/12' },
         { t: 'h', text: 'Proving an identity' },
         { t: 'p', text: 'Work on **one side only**, usually the more complicated one, and transform it step by step until it matches the other side. Do not "move terms across" as if it were an equation, because that assumes what you want to prove.' },
@@ -153,7 +153,7 @@ export const unit6: Unit = {
       minutes: 17,
       goals: ['Read the amplitude, period, phase shift and midline from an equation', 'Write the equation of a sinusoidal graph', 'Sketch tan, sec, csc and cot with their asymptotes', 'Use a sine or cosine function as a model'],
       blocks: [
-        { t: 'p', text: 'Sine and cosine graphs are **waves**. They describe anything that repeats smoothly: the tide, a pendulum, alternating current, the seasons. Each wave is described by four numbers, and the transformations of Unit 5 tell you what each one does.' },
+        { t: 'p', text: 'Sine and cosine graphs are **waves**. They describe anything that repeats smoothly: the tide, a pendulum, alternating current, the seasons. Each wave is described by four numbers, and the transformations from the functions unit tell you what each one does.' },
         { t: 'formula', lines: ['y = a sin(b(x − h)) + d', 'amplitude = |a|     period = 2π / |b|', 'phase shift = h     midline y = d'], caption: 'The same holds for cosine. For tangent the period is π/|b|. Radians are used throughout.' },
         { t: 'widget', id: 'wave' },
         { t: 'table', head: ['Symbol', 'Meaning', 'On the graph'], rows: [
@@ -184,7 +184,7 @@ export const unit6: Unit = {
       minutes: 19,
       goals: ['Find all solutions in a longer interval and write a general solution', 'Solve equations with a multiple or shifted angle', 'Solve quadratics in sin x or cos x', 'Use an identity to turn an equation into one you can solve, without losing solutions'],
       blocks: [
-        { t: 'p', text: 'Unit 1 solved equations like `2 cos x − √3 = 0` on one turn. Here we go further: several turns, a changed angle like `sin 2x`, quadratics in sin x, and equations that mix functions. The method is always the same: **isolate a single function, find the angles, and use periodicity to list every solution in the interval**.' },
+        { t: 'p', text: 'The unit circle unit solved equations like `2 cos x − √3 = 0` on one turn. Here we go further: several turns, a changed angle like `sin 2x`, quadratics in sin x, and equations that mix functions. The method is always the same: **isolate a single function, find the angles, and use periodicity to list every solution in the interval**.' },
         { t: 'h', text: 'General solutions' },
         { t: 'p', text: 'Because the functions repeat, there are infinitely many solutions. Let α be the principal value (from sin⁻¹, cos⁻¹ or tan⁻¹). Using n for any whole number:' },
         { t: 'table', head: ['Equation', 'General solution (degrees)', 'Why'], rows: [

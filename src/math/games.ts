@@ -172,6 +172,51 @@ export function probPool(r: Rng): [string, string, () => number][] {
   return out
 }
 
+/* Algebra 1 and geometry pools: [text, value as text, independent check] */
+const mn = (n: number) => String(n).replace('-', '−')
+export function signedPool(r: Rng): [string, string, number][] {
+  const out: [string, string, number][] = []
+  for (let i = 0; i < 80; i++) {
+    const a = ri(r, -12, 12), b = ri(r, -12, 12), c = ri(r, 2, 9)
+    const br = (v: number) => (v < 0 ? `(${mn(v)})` : String(v))
+    out.push([`${mn(a)} + ${br(b)}`, mn(a + b), a + b], [`${mn(a)} − ${br(b)}`, mn(a - b), a - b], [`${mn(a)} × ${br(b)}`, mn(a * b), a * b], [`${mn(a * c)} ÷ ${c}`, mn(a), a])
+  }
+  return out
+}
+export function fractionPool(r: Rng): [string, string, number][] {
+  const out: [string, string, number][] = []
+  const g = (x: number, y: number): number => (y === 0 ? Math.abs(x) : g(y, x % y))
+  const ft = (n: number, d: number) => { const c = g(n, d); return d / c === 1 ? String(n / c) : `${n / c}/${d / c}` }
+  for (let i = 0; i < 80; i++) {
+    const d1 = ri(r, 2, 9), d2 = ri(r, 2, 9), n1 = ri(r, 1, d1 - 1 || 1), n2 = ri(r, 1, d2 - 1 || 1)
+    out.push([`${n1}/${d1} + ${n2}/${d2}`, ft(n1 * d2 + n2 * d1, d1 * d2), n1 / d1 + n2 / d2], [`${n1}/${d1} × ${n2}/${d2}`, ft(n1 * n2, d1 * d2), (n1 / d1) * (n2 / d2)])
+    out.push([`${n1}/${d1} ÷ ${n2}/${d2}`, ft(n1 * d2, d1 * n2), (n1 / d1) / (n2 / d2)])
+  }
+  return out
+}
+export function slopePool(r: Rng): [string, string, number][] {
+  const out: [string, string, number][] = []
+  const g = (x: number, y: number): number => (y === 0 ? Math.abs(x) : g(y, x % y))
+  for (let i = 0; i < 120; i++) {
+    const x1 = ri(r, -6, 6), y1 = ri(r, -6, 6), x2 = ri(r, -6, 6), y2 = ri(r, -6, 6)
+    if (x1 === x2) continue
+    const n = y2 - y1, d = x2 - x1, c = g(n, d), nn = (n / c) * (d < 0 ? -1 : 1), dd = Math.abs(d / c)
+    out.push([`Slope through (${mn(x1)}, ${mn(y1)}) and (${mn(x2)}, ${mn(y2)})`, dd === 1 ? mn(nn) : `${mn(nn)}/${dd}`, n / d])
+  }
+  return out
+}
+export function geometryPool(r: Rng): [string, string, number][] {
+  const out: [string, string, number][] = []
+  const TR: [number, number, number][] = [[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25], [6, 8, 10], [9, 12, 15], [20, 21, 29]]
+  for (let i = 0; i < 40; i++) {
+    const rad = ri(r, 2, 14), [a, b, c] = TR[ri(r, 0, TR.length - 1)], w = ri(r, 3, 15), h = ri(r, 3, 15)
+    out.push([`Area of a circle of radius ${rad}`, `${rad * rad}π`, rad * rad * Math.PI], [`Circumference of a circle of radius ${rad}`, `${2 * rad}π`, 2 * rad * Math.PI])
+    out.push([`Hypotenuse with legs ${a} and ${b}`, String(c), Math.hypot(a, b)], [`Area of a rectangle ${w} by ${h}`, String(w * h), w * h])
+    out.push([`Angle sum of a polygon with ${rad} sides`, `${(rad - 2) * 180}°`, (rad - 2) * 180])
+  }
+  return out
+}
+
 const tidy = (t: string) => showF(t).replace(/−/g, '−')
 
 export const DECKS: Deck[] = [
@@ -449,6 +494,22 @@ export const DECKS: Deck[] = [
   {
     id: 'probability-values', name: 'Probabilities', blurb: 'Pair each event with its probability.',
     make: (r, n) => draw(r, probPool(r).map(([t, v]) => [t, v] as [string, string]), n),
+  },
+  {
+    id: 'signed-values', name: 'Signed numbers', blurb: 'Pair each calculation with positive and negative numbers with its answer.',
+    make: (r, n) => draw(r, signedPool(r).map(([t, v]) => [t, v] as [string, string]), n),
+  },
+  {
+    id: 'fraction-results', name: 'Fraction arithmetic', blurb: 'Pair each fraction calculation with its answer in lowest terms.',
+    make: (r, n) => draw(r, fractionPool(r).map(([t, v]) => [t, v] as [string, string]), n),
+  },
+  {
+    id: 'slope-values', name: 'Slopes of lines', blurb: 'Pair each pair of points with the slope of the line through them.',
+    make: (r, n) => draw(r, slopePool(r).map(([t, v]) => [t, v] as [string, string]), n),
+  },
+  {
+    id: 'geometry-values', name: 'Geometry facts', blurb: 'Pair each area, circumference, hypotenuse or angle sum with its value.',
+    make: (r, n) => draw(r, geometryPool(r).map(([t, v]) => [t, v] as [string, string]), n),
   },
 ]
 

@@ -367,3 +367,20 @@ describe('unit 12 decks', () => {
     for (const id of ['determinant-values', 'characteristic-roots', 'probability-values']) for (let s = 1; s <= 30; s++) { const b = buildBoard(id, 6, s * 13); expect(b.length, id).toBe(12); expect(new Set(b.map((t) => t.text)).size, id).toBe(12) }
   })
 })
+
+describe('algebra 1 and geometry decks', () => {
+  it('values are right', async () => {
+    const { signedPool, fractionPool, slopePool, geometryPool } = await import('./games')
+    const { mulberry } = await import('./rng')
+    const val = (raw: string) => { const t = raw.replace('−', '-'); return t.includes('/') ? t.split('/').map(Number).reduce((x, y) => x / y) : Number(t) }
+    for (let sd = 1; sd <= 4; sd++) {
+      for (const [t, v, check] of signedPool(mulberry(sd))) expect(Math.abs(val(v) - check), t).toBeLessThan(1e-9)
+      for (const [t, v, check] of fractionPool(mulberry(sd))) expect(Math.abs(val(v) - check), t).toBeLessThan(1e-9)
+      for (const [t, v, check] of slopePool(mulberry(sd))) expect(Math.abs(val(v) - check), t).toBeLessThan(1e-9)
+      for (const [t, v, check] of geometryPool(mulberry(sd))) expect(Math.abs(val(v.replace('π', '').replace('°', '') || '1') * (v.includes('π') ? Math.PI : 1) - check), t).toBeLessThan(1e-9)
+    }
+  })
+  it('the decks build', () => {
+    for (const id of ['signed-values', 'fraction-results', 'slope-values', 'geometry-values']) for (let s = 1; s <= 30; s++) { const b = buildBoard(id, 6, s * 13); expect(b.length, id).toBe(12); expect(new Set(b.map((t) => t.text)).size, id).toBe(12) }
+  })
+})

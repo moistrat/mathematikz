@@ -29,6 +29,8 @@ Seven units are built.
 
 - **Unit 12, differential equations, linear algebra, probability and statistics**: 6 lessons, 6 interactive figures (slope field and Euler, damped oscillator, matrix transformation, binomial distribution, normal distribution, regression), about 50 generators, and 3 more match-up decks. **All twelve units of the course map are now built.**
 
+- **Algebra 1 and geometry (added later)**: four new units placed at the front (foundations, linear equations and inequalities, lines and linear systems, geometry essentials), 17 lessons, 17 interactive figures, about 130 generators, 4 match-up decks. The units were then put into standard curriculum order (the numbers in the Done list above are the original build order).
+
 Explore still only has the unit-circle tools. A Games page (Sprint, Survival, Match-up, Root hunter) is live.
 
 ## Pages
@@ -46,23 +48,26 @@ Content tests, engine tests and thousands of generated questions pass (every que
 
 Each unit follows the same recipe: lessons with worked examples, a table or formulas, check questions and interactive figures; generated practice at three levels with worked solutions; and tests that pin the engine and every generator. Games draw on the same generators.
 
-| # | Unit | Status |
-|---|------|--------|
-| 1 | The unit circle | built |
-| 2 | Factoring and rational expressions | built |
-| 3 | Equations and inequalities: linear, quadratic (factoring, completing the square, formula), absolute value, inequalities, systems | built |
+| # | Unit | Course | Status |
+|---|------|--------|--------|
+| 1 | Foundations: signed numbers, fractions and percent, ratios, expressions, powers and polynomials | Algebra 1 | built |
+| 2 | Linear equations and inequalities, with word problems | Algebra 1 | built |
+| 3 | Lines and linear systems: slope, forms of a line, systems, linear models | Algebra 1 | built |
+| 4 | Geometry essentials: angles, Pythagoras and distance, area and volume, similarity, circles | Geometry | built |
+| 5 | Factoring and rational expressions | Algebra 2 | built |
+| 6 | Equations and inequalities: quadratics (factoring, formula), absolute value, sign charts, systems | Algebra 2 | built |
+| 7 | Exponents, radicals and logarithms | Algebra 2 | built |
+| 8 | Functions and graphs: domain and range, transformations, composition, inverses, polynomial and rational graphs | Algebra 2 | built |
+| 9 | Sequences, series and the binomial theorem | Algebra 2 | built |
+| 10 | The unit circle: radians, exact values, trig equations, inverse functions | Precalculus | built |
+| 11 | Trigonometry, continued: right triangles, sine and cosine rules, identities, graphs, general solutions | Precalculus | built |
+| 12 | Complex numbers and vectors | Precalculus | built |
+| 13 | Limits and derivatives | Calculus | built |
+| 14 | Integration | Calculus | built |
+| 15 | Series and advanced calculus: convergence, Taylor series, multivariable calculus | Calculus | built |
+| 16 | Differential equations, linear algebra, probability and statistics | Beyond calculus | built |
 
-| 4 | Exponents, radicals and logarithms | built |
-| 5 | Functions and graphs: domain and range, transformations, composition, inverses, polynomial and rational graphs | built |
-| 6 | Trigonometry, continued: right triangles, sine and cosine rules, identities, graphs, general solutions | built |
-| 7 | Sequences, series and the binomial theorem | built |
-| 8 | Complex numbers and vectors | built |
-| 9 | Limits and derivatives: definition, rules, chain rule, implicit, applications (optimisation, related rates) | built |
-| 10 | Integrals: antiderivatives, substitution, by parts, partial fractions, areas and volumes | built |
-| 11 | Series and advanced calculus: convergence tests, Taylor series, multivariable, partial derivatives, multiple integrals | built |
-| 12 | Differential equations, linear algebra, probability and statistics | built |
-
-Games already live: Sprint, Survival, Match-up (three decks), Root hunter. Each new unit adds a match-up deck and its generators automatically join Sprint and Survival.
+Games already live: Sprint, Survival, Match-up (many decks), Root hunter. Each new unit adds a match-up deck and its generators automatically join Sprint and Survival.
 
 ## Ideas for later
 - Step-by-step solver that checks each line of a student's working.
