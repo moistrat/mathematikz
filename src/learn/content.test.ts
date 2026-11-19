@@ -16,8 +16,8 @@ describe('course content', () => {
       expect(l.blocks.filter((b) => b.t === 'widget').length, l.id).toBeGreaterThanOrEqual(1)
       expect(l.blocks.filter((b) => b.t === 'example').length, l.id).toBeGreaterThanOrEqual(2)
     }
-    expect(UNITS.length).toBeGreaterThanOrEqual(13)
-    expect(LESSONS.length).toBeGreaterThanOrEqual(68)
+    expect(UNITS.length).toBeGreaterThanOrEqual(14)
+    expect(LESSONS.length).toBeGreaterThanOrEqual(71)
   })
   it('check questions are well formed', () => {
     for (const l of LESSONS) for (const b of l.blocks) {
@@ -37,6 +37,6 @@ describe('course content', () => {
   })
   it('every widget used in a lesson exists', async () => {
     const used = new Set(LESSONS.flatMap((l) => l.blocks.flatMap((b) => (b.t === 'widget' ? [b.id] : []))))
-    expect([...used].sort()).toEqual(['ambiguous', 'accumulate', 'areamodel', 'argand', 'astc', 'betweencurves', 'boxopt', 'asymptotes', 'binomlab', 'composer', 'converter', 'cobweb', 'convinterval', 'crosslab', 'cubicroots', 'derivgraph', 'domainrange', 'doubleint', 'explog', 'fractionbars', 'family', 'exprlab', 'gradlab', 'graphsolve', 'holes', 'identity', 'implicitlab', 'inverse', 'invgraph', 'ladder', 'limitlab', 'lineargraph', 'loglab', 'numberline', 'matrixlab', 'normallab', 'oscillator', 'polysketch', 'quadlab', 'rootsunity', 'radians', 'radicalfactor', 'ratiolab', 'partialsums', 'partsteps', 'pascal', 'ratgraph', 'reference', 'regression', 'revolve', 'riemann', 'rtri', 'secantlab', 'scinotation', 'seqlab', 'seriesconv', 'signchart', 'slopefield', 'substeps', 'systemslab', 'taylorlab', 'transform', 'triangles', 'trigsolve', 'unitcircle', 'vectorlab', 'wave'].sort())
+    expect([...used].sort()).toEqual(['ambiguous', 'accumulate', 'areamodel', 'balance', 'argand', 'astc', 'betweencurves', 'boxopt', 'asymptotes', 'binomlab', 'composer', 'converter', 'cobweb', 'convinterval', 'crosslab', 'cubicroots', 'derivgraph', 'domainrange', 'doubleint', 'explog', 'fractionbars', 'family', 'exprlab', 'gradlab', 'graphsolve', 'holes', 'identity', 'inequline', 'implicitlab', 'inverse', 'invgraph', 'ladder', 'limitlab', 'lineargraph', 'loglab', 'numberline', 'matrixlab', 'meeting', 'normallab', 'oscillator', 'polysketch', 'quadlab', 'rootsunity', 'radians', 'radicalfactor', 'ratiolab', 'partialsums', 'partsteps', 'pascal', 'ratgraph', 'reference', 'regression', 'revolve', 'riemann', 'rtri', 'secantlab', 'scinotation', 'seqlab', 'seriesconv', 'signchart', 'slopefield', 'substeps', 'systemslab', 'taylorlab', 'transform', 'triangles', 'trigsolve', 'unitcircle', 'vectorlab', 'wave'].sort())
   })
 })

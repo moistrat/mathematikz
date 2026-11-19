@@ -1,5 +1,6 @@
 import { Lesson, Unit } from '../types'
 import { unitA } from './unitA'
+import { unitB } from './unitB'
 import { unit1 } from './unit1'
 import { unit2 } from './unit2'
 import { unit3 } from './unit3'
@@ -13,6 +14,6 @@ import { unit10 } from './unit10'
 import { unit11 } from './unit11'
 import { unit12 } from './unit12'
 
-export const UNITS: Unit[] = [unitA, unit1, unit2, unit3, unit4, unit5, unit6, unit7, unit8, unit9, unit10, unit11, unit12]
+export const UNITS: Unit[] = [unitA, unitB, unit1, unit2, unit3, unit4, unit5, unit6, unit7, unit8, unit9, unit10, unit11, unit12]
 export const LESSONS: Lesson[] = UNITS.flatMap((u) => u.lessons)
 export const unitOf = (lessonId: string) => UNITS.find((u) => u.lessons.some((l) => l.id === lessonId))

@@ -161,3 +161,106 @@ export function SciNotation() {
     </Frame>
   )
 }
+
+/* ------------------------------------------------------------------ solving ax + b = c as a balance */
+
+export function Balance() {
+  const [a, setA] = useState(3)
+  const [b, setB] = useState(4)
+  const [x, setX] = useState(5)
+  const c = a * x + b
+  const step = (n: number) => (n === 0 ? `${a}x + ${b} = ${c}` : n === 1 ? `${a}x = ${c - b}` : `x = ${(c - b) / a}`)
+  const [s, setS] = useState(0)
+  const pan = (cx: number, label: string, items: string[]) => (
+    <g>
+      <rect x={cx - 120} y={110} width={240} height={14} rx={4} className="w-body" />
+      {items.map((t, i) => <g key={i}><rect x={cx - 110 + i * 70} y={70} width={60} height={36} rx={5} className={t.includes('x') ? 'w-body alt' : 'w-body'} /><text x={cx - 80 + i * 70} y={94} textAnchor="middle" className="w-t sm">{t}</text></g>)}
+      <text x={cx} y={146} textAnchor="middle" className="w-t sm">{label}</text>
+    </g>
+  )
+  return (
+    <Frame caption="An equation is a balance: both pans weigh the same. Whatever you do to one side you must do to the other so the scale stays level. To solve ax + b = c, first undo the addition by taking b from both sides, then undo the multiplication by dividing both sides by a. Step through the solution below.">
+      <svg viewBox={`0 0 ${W} 170`} className="wsvg" role="img" aria-label="A balance scale for the equation">
+        <line x1={W / 2} y1={30} x2={W / 2} y2={160} className="w-axis" />
+        {pan(180, 'left side', s === 0 ? [`${a}x`, `+${b}`] : s === 1 ? [`${a}x`] : ['x'])}
+        {pan(460, 'right side', s === 0 ? [String(c)] : s === 1 ? [String(c - b)] : [String((c - b) / a)])}
+      </svg>
+      <div className="widget-controls">
+        <div className="two-col">
+          <LinSlider label="a" value={a} min={2} max={9} onChange={(v) => { setA(v); setS(0) }} fmt={(v) => String(v)} />
+          <LinSlider label="b" value={b} min={1} max={12} onChange={(v) => { setB(v); setS(0) }} fmt={(v) => String(v)} />
+          <LinSlider label="Hidden value of x" value={x} min={1} max={12} onChange={(v) => { setX(v); setS(0) }} fmt={(v) => String(v)} />
+        </div>
+        <div className="seg" role="group" aria-label="Steps"><button type="button" onClick={() => setS(Math.min(2, s + 1))} disabled={s >= 2}>Next step</button><button type="button" onClick={() => setS(0)}>Start again</button></div>
+        <Readouts items={[['Equation', step(s)], ['Operation', s === 0 ? 'ready to start' : s === 1 ? `subtract ${b} from both sides` : `divide both sides by ${a}`], ['Check', `${a}(${(c - b) / a}) + ${b} = ${c}`]]} />
+      </div>
+    </Frame>
+  )
+}
+
+/* ------------------------------------------------------------------ two travellers closing a gap */
+
+export function Meeting() {
+  const [v1, setV1] = useState(60)
+  const [v2, setV2] = useState(40)
+  const [gap, setGap] = useState(300)
+  const [t, setT] = useState(1)
+  const meet = gap / (v1 + v2)
+  const tt = Math.min(t, meet * 1.4)
+  const p1 = Math.min(gap, v1 * tt), p2 = Math.max(0, gap - v2 * tt)
+  const sx = (d: number) => 40 + (d / gap) * (W - 80)
+  return (
+    <Frame caption="Two travellers start at opposite ends of a road and walk towards each other. Together they close the gap at the sum of their speeds, so they meet after time gap ÷ (v₁ + v₂). The equation v₁t + v₂t = gap is a linear equation in t, and its solution is the moment the dots meet.">
+      <svg viewBox={`0 0 ${W} 120`} className="wsvg" role="img" aria-label="Two travellers moving towards each other along a road">
+        <line x1={40} x2={W - 40} y1={70} y2={70} className="w-axis" />
+        <circle cx={sx(p1)} cy={70} r={9} className="w-dot" /><circle cx={sx(p2)} cy={70} r={9} className="w-joint" />
+        <text x={sx(p1)} y={50} textAnchor="middle" className="w-t sm">A</text><text x={sx(p2)} y={50} textAnchor="middle" className="w-t sm">B</text>
+        <text x={40} y={100} className="w-t sm">0 km</text><text x={W - 40} y={100} textAnchor="end" className="w-t sm">{gap} km</text>
+      </svg>
+      <div className="widget-controls">
+        <div className="two-col">
+          <LinSlider label="Speed of A (km/h)" value={v1} min={10} max={100} step={5} onChange={setV1} fmt={(v) => String(v)} />
+          <LinSlider label="Speed of B (km/h)" value={v2} min={10} max={100} step={5} onChange={setV2} fmt={(v) => String(v)} />
+          <LinSlider label="Distance apart (km)" value={gap} min={100} max={600} step={50} onChange={setGap} fmt={(v) => String(v)} />
+          <LinSlider label="Time (hours)" value={t} min={0} max={6} step={0.05} onChange={setT} fmt={(v) => num(v, 2)} />
+        </div>
+        <Readouts items={[['Equation', `${v1}t + ${v2}t = ${gap}`], ['They meet after', `${num(meet, 3)} hours`, `${gap} ÷ ${v1 + v2}`], ['Distance between them now', `${num(Math.max(0, gap - (v1 + v2) * tt), 1)} km`]]} />
+      </div>
+    </Frame>
+  )
+}
+
+/* ------------------------------------------------------------------ inequalities on a number line */
+
+export function IneqLine() {
+  const [a, setA] = useState(2)
+  const [k, setK] = useState(3)
+  const [op, setOp] = useState<'<' | '≤' | '>' | '≥'>('<')
+  const lo = -10, hi = 10
+  const sx = (v: number) => 20 + ((v - lo) / (hi - lo)) * (W - 40)
+  const incl = op === '≤' || op === '≥'
+  // k x op k a: dividing by k keeps the sign; show also the flipped case for -k
+  const [neg, setNeg] = useState(false)
+  const kk = neg ? -k : k
+  const solOp = neg ? ({ '<': '>', '≤': '≥', '>': '<', '≥': '≤' } as const)[op] : op
+  const sRight = solOp === '>' || solOp === '≥'
+  return (
+    <Frame caption="The solutions of an inequality fill a whole region of the number line. An open circle means the end point is not included (< or >) and a filled circle means it is included (≤ or ≥). The one new rule: when you multiply or divide both sides by a negative number, the inequality sign must flip, because negating reverses the order of the numbers.">
+      <svg viewBox={`0 0 ${W} 110`} className="wsvg" role="img" aria-label="The solution of an inequality shaded on a number line">
+        <line x1={20} x2={W - 20} y1={60} y2={60} className="w-axis" />
+        {Array.from({ length: hi - lo + 1 }, (_, i) => lo + i).map((t) => <g key={t}><line x1={sx(t)} x2={sx(t)} y1={55} y2={65} className="w-axis" />{t % 2 === 0 && <text x={sx(t)} y={86} textAnchor="middle" className="w-t sm">{t < 0 ? `${MINUS}${-t}` : t}</text>}</g>)}
+        <rect x={sRight ? sx(a) : 20} y={54} width={sRight ? W - 20 - sx(a) : sx(a) - 20} height={12} className="w-area" />
+        <circle cx={sx(a)} cy={60} r={7} className={incl ? 'w-dot' : 'w-joint'} />
+      </svg>
+      <div className="widget-controls">
+        <Seg label="Sign" value={op} options={[{ id: '<', label: '<' }, { id: '≤', label: '≤' }, { id: '>', label: '>' }, { id: '≥', label: '≥' }]} onChange={setOp} />
+        <div className="two-col">
+          <LinSlider label="Boundary a" value={a} min={-8} max={8} onChange={setA} fmt={(v) => num(v, 0)} />
+          <LinSlider label="Multiplier k" value={k} min={1} max={5} onChange={setK} fmt={(v) => String(v)} />
+        </div>
+        <div className="seg" role="group" aria-label="Negative multiplier"><button type="button" className={!neg ? 'on' : ''} onClick={() => setNeg(false)}>positive k</button><button type="button" className={neg ? 'on' : ''} onClick={() => setNeg(true)}>negative k</button></div>
+        <Readouts items={[['Inequality', `${kk === 1 ? '' : kk === -1 ? '−' : kk}x ${op} ${num(kk * a, 0)}`], ['Divide by ' + num(kk, 0), `x ${solOp} ${num(a, 0)}`, neg ? 'the sign flipped' : 'the sign stays'], ['Solution set', sRight ? `${incl ? '[' : '('}${num(a, 0)}, ∞)` : `(−∞, ${num(a, 0)}${incl ? ']' : ')'}`]]} />
+      </div>
+    </Frame>
+  )
+}
