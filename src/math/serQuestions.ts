@@ -23,7 +23,7 @@ const looksConvergent = (term: (n: number) => number, start = 1) => {
   return Number.isFinite(a) && Number.isFinite(b) && Math.abs(b - a) < 0.05 && Math.abs(term(6000)) < 1e-2 && Math.abs(term(5999)) < 1e-2
 }
 const rd = (v: number, p: number) => Number(v.toFixed(p))
-const ordinalText = (n: number) => `${n}`
+
 
 /** a word answer with accepted spellings */
 function wordSpec(prompt: string, words: string[], options: string[], hint: string, expl: string[]): Spec {
@@ -312,4 +312,3 @@ export const TAYLOR_GENS: Gen[] = [
 const pwr = (f: { n: number; d: number }, k: number) => { let r = fr(1); for (let i = 0; i < k; i++) r = fMul(r, f as never); return r }
 
 export const SERIES_GENS: Gen[] = [...SER_GENS, ...POW_S_GENS, ...TAYLOR_GENS]
-void ordinalText; void fSub; void ineqSpec

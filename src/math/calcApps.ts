@@ -3,7 +3,7 @@
  * approximation and l'Hôpital's rule. Every answer is checked by brute force inside the generator.
  */
 import { fr } from './algebra'
-import { calcSpec, decSpec, sup, evP, fm, limitCheck, MN, must, noneSpec, numSpec, P, piSpec, ri, rnz, S, w } from './calcHelpers'
+import { decSpec, sup, evP, fm, limitCheck, MN, must, numSpec, P, piSpec, ri, rnz, S, w } from './calcHelpers'
 import { exactSet, exF, ineqSpec } from './equationQuestions'
 import type { Gen, Spec } from './questions'
 import { pick } from './rng'
@@ -151,5 +151,4 @@ export const APP_GENS: Gen[] = [
   } },
 ]
 
-void noneSpec; void calcSpec
 export type { Spec }

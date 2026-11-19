@@ -3,7 +3,7 @@
  * Probabilities are exact fractions where possible; normal probabilities come from an accurate series for the error function.
  */
 import { fAdd, fDiv, fMul, fr, fSub, Frac } from './algebra'
-import { fm, gcd, MN, must, numSpec, ri, rnz, sup, w } from './calcHelpers'
+import { fm, MN, must, numSpec, ri, rnz, sup } from './calcHelpers'
 import { approxSpec } from './powerQuestions'
 import type { Gen, Spec } from './questions'
 import { pick } from './rng'
@@ -165,5 +165,4 @@ export const STAT_GENS: Gen[] = [
     }
   } },
 ]
-void w; void gcd
 export const PS_GENS: Gen[] = [...PROB_GENS, ...STAT_GENS]

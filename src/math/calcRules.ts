@@ -5,8 +5,8 @@
  * of the original function, so a wrong formula cannot reach a student.
  */
 import { fr } from './algebra'
-import { calcSpec, sup, cof, decSpec, dP, evP, fm, gcd, MN, must, numSpec, P, ri, rnz, S, w, xp } from './calcHelpers'
-import { isDerivative, numDeriv } from './calculus'
+import { calcSpec, sup, cof, dP, evP, fm, MN, must, numSpec, P, ri, rnz, S, w, xp } from './calcHelpers'
+import { numDeriv } from './calculus'
 import type { Gen, Spec } from './questions'
 import { pick } from './rng'
 
@@ -257,5 +257,4 @@ export const HIGHER_GENS: Gen[] = [
   } },
 ]
 
-void decSpec; void gcd; void isDerivative
 export type { Spec }

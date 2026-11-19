@@ -4,14 +4,14 @@
  * Every definite integral is verified with Simpson's rule.
  */
 import { fAdd, fr, fSub } from './algebra'
-import { defCheck, dP, evP, fm, fracPiSpec, intSpec, MN, must, noneSpec, numSpec, P, polyDef, ri, rnz, S, sup, w, xp, cof, calcSpec } from './calcHelpers'
+import { defCheck, fm, intSpec, MN, must, numSpec, P, polyDef, ri, rnz, S, sup, w, xp, cof, calcSpec } from './calcHelpers'
 import { simpson } from './calculus'
 import { evaluate } from './parse'
 import type { Gen } from './questions'
 import { pick } from './rng'
 
 const A = (a: number) => MN(String(a))
-const pw = (b: string, e: number) => (e === 1 ? b : `${b}^${e}`)
+
 const randPoly = (r: () => number, deg: number) => { const cs = Array.from({ length: deg + 1 }, () => (r() < 0.2 ? 0 : ri(r, -6, 8))); cs[deg] = rnz(r, 1, 6) * (r() < 0.3 ? -1 : 1); return cs }
 /** one term of an antiderivative: (n/d) x^e as ASCII */
 const ft = (c: { n: number; d: number }, e: number) => {
@@ -274,4 +274,3 @@ export const SUB_GENS: Gen[] = [
   } },
 ]
 export const INT_A: Gen[] = [...ANTI_GENS, ...DEF_GENS, ...SUB_GENS]
-void dP; void evP; void pw; void fracPiSpec; void noneSpec; void ri

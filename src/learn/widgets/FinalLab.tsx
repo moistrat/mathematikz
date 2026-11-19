@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { phi } from '../../math/psQuestions'
 import { MINUS } from '../../math/exact'
-import { Arrow, H as PH, Plane, W as PW } from './ComplexVec'
+import { Arrow, Plane } from './ComplexVec'
 import { Frame, LinSlider, Readouts, Seg } from './shared'
 import { curve, Plot } from './Solving'
 
@@ -237,4 +237,3 @@ export function Regression() {
     </Frame>
   )
 }
-void PH; void PW

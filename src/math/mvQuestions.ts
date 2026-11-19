@@ -4,9 +4,9 @@
  */
 import { fAdd, fDiv, fMul, fr } from './algebra'
 import { double } from './calculus'
-import { fm, fracPiSpec, MN, must, noneSpec, numSpec, pdSpec, ri, rnz, S, sup, w, decSpec } from './calcHelpers'
+import { fm, fracPiSpec, MN, must, numSpec, pdSpec, ri, rnz, S, w, decSpec } from './calcHelpers'
 import { pairSpec } from './equationQuestions'
-import { evaluate } from './parse'
+import { } from './parse'
 import type { Gen, Spec } from './questions'
 import { pick } from './rng'
 
@@ -202,5 +202,4 @@ export const MI_GENS: Gen[] = [
     return numSpec(`Find the volume of the tetrahedron bounded by the coordinate planes and the plane x + y + z = ${a}.`, v, 'Integrate 1 over the region: z from 0 to a − x − y, y from 0 to a − x, x from 0 to a.', [`V = ∫ from 0 to ${a} ∫ from 0 to ${a} − x of (${a} − x − y) dy dx.`, `The inner integral is (${a} − x)²/2, and ∫ from 0 to ${a} of (${a} − x)²/2 dx = ${a}³/6.`, `V = ${fm(v)}.`])
   } },
 ]
-void noneSpec; void evaluate; void sup
 export const MV_GENS: Gen[] = [...PD_GENS, ...MI_GENS]

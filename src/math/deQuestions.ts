@@ -2,7 +2,7 @@
  * Question generators for Unit 12, lessons 'first-order-de' and 'second-order-de'.
  * Every solution formula is checked inside the generator by substituting it back into the equation numerically.
  */
-import { fAdd, fDiv, fMul, fr, fSub } from './algebra'
+import { fAdd, fMul, fr, fSub } from './algebra'
 import { calcSpec, fc, fm, fracPiSpec, MN, numSpec, odeText, ri, rnz, S, solves1, solves2, sup, w } from './calcHelpers'
 import { exactSet, exF } from './equationQuestions'
 import type { Gen, Spec } from './questions'
@@ -162,4 +162,3 @@ export const SO_GENS: Gen[] = [
     return calcSpec(`Find a particular solution of the form y = mx + n for ${odeText(p, q)} = ${A(a)}x ${b < 0 ? `− ${-b}` : b === 0 ? '' : `+ ${b}`}.`, `y''`, yp, 'Substitute y = mx + n (so y′ = m and y″ = 0) and match the coefficients of x and the constants.', [`With y = mx + n: y″ = 0 and y′ = m, so the left side is ${p === 0 ? '' : `${A(p)}m + `}${A(q)}(mx + n).`, `Matching the coefficients of x: ${A(q)}m = ${A(a)}, so m = ${A(m)}.`, `Matching the constants: ${p === 0 ? '' : `${A(p)}m + `}${A(q)}n = ${A(b)}, with m = ${A(m)}, so n = ${A(n)}.`], { check: false })
   } },
 ]
-void words; void pick; void fDiv; void sup

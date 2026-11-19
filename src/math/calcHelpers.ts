@@ -153,5 +153,4 @@ export const matText = (m: number[][]) => `[${m.map((r) => `[${r.map((v) => MN(S
 
 /** y″ + p y′ + q y as text */
 export const odeText = (p: number, q: number) => `y″${p === 0 ? '' : ` ${p < 0 ? '−' : '+'} ${Math.abs(p) === 1 ? '' : Math.abs(p)}y′`}${q === 0 ? '' : ` ${q < 0 ? '−' : '+'} ${Math.abs(q) === 1 ? '' : Math.abs(q)}y`}`
-/** clean up the text of a question: no "+ −", "− −", or coefficient 1 in front of a letter */
-export const tidyText = (t: string) => t.replace(/\+ −/g, '− ').replace(/− −/g, '+ ').replace(/\+ -/g, '− ').replace(/(?<![\d./^])1(?=[xyzr](?![a-z]))/g, '').replace(/\s{2,}/g, ' ')
+export { tidyText } from './tidy'

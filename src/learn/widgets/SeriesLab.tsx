@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { MINUS } from '../../math/exact'
-import { Arrow, H as PH, Plane, W as PW } from './ComplexVec'
+import { Arrow, H as PH, W as PW } from './ComplexVec'
 import { Frame, LinSlider, Readouts, Seg } from './shared'
 import { curve, Plot } from './Solving'
 
@@ -222,4 +222,3 @@ export function DoubleInt() {
     </Frame>
   )
 }
-void Plane

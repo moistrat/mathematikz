@@ -2,7 +2,7 @@
  * Question generators for Unit 10, lessons 'integration-techniques' (algebra first, by parts, partial fractions, trig)
  * and 'integral-applications' (volumes, mean value, rates, Simpson's rule, improper integrals).
  */
-import { fAdd, fMul, fr } from './algebra'
+import { fMul, fr } from './algebra'
 import { defCheck, fm, fracPiSpec, intSpec, MN, must, noneSpec, numSpec, P, piSpec, polyDef, ri, rnz, S, sup, w } from './calcHelpers'
 import { simpson } from './calculus'
 import { antiP } from './intAnti'
@@ -181,4 +181,3 @@ export const APPL_GENS: Gen[] = [
     return noneSpec(`Evaluate ∫ from 0 to 1 of ${a === 1 ? '1' : a}/x dx, or say that it diverges.`, 'diverges', 'Integrate from ε to 1 and let ε → 0⁺.', [`∫ from ε to 1 of ${a}/x dx = ${a}(ln 1 − ln ε) = −${a} ln ε.`, 'As ε → 0⁺, −ln ε grows without bound, so the integral diverges.'])
   } },
 ]
-void fAdd

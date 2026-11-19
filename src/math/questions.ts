@@ -8,6 +8,7 @@ import { ALG_GENS } from './algebraQuestions'
 import { EQ_GENS } from './equationQuestions'
 import { FN_GENS } from './functionQuestions'
 import { checkCalc, CalcSpec } from './calculus'
+import { tidyText } from './tidy'
 import { CALC_GENS } from './calcQuestions'
 import { CX_GENS } from './cxQuestions'
 import { ADV_GENS } from './advQuestions'
@@ -599,7 +600,16 @@ const TRIG_GENS: Gen[] = [
   } },
 ]
 
-const GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS, ...SEQ_GENS, ...CX_GENS, ...CALC_GENS, ...INT_GENS, ...ADV_GENS, ...FIN_GENS]
+const RAW_GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS, ...SEQ_GENS, ...CX_GENS, ...CALC_GENS, ...INT_GENS, ...ADV_GENS, ...FIN_GENS]
+/** every generator has the text of its questions tidied (see tidy.ts); wrapped in place so the unit arrays still hold the same objects */
+const tidied = new WeakSet<Gen>()
+for (const g of RAW_GENS) {
+  if (tidied.has(g)) continue
+  tidied.add(g)
+  const make = g.make
+  g.make = (r) => { const q = make(r); return { ...q, prompt: tidyText(q.prompt), display: tidyText(q.display), explanation: q.explanation.map(tidyText) } }
+}
+const GENS: Gen[] = RAW_GENS
 
 /* ------------------------------------------------------------------ public API */
 

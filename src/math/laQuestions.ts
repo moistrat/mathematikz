@@ -83,7 +83,7 @@ function withEig(r: () => number) {
     return { m, l1, l2, p, q: p + 1, P, Pi }
   }
 }
-const sameSet = (a: number[], b: number[]) => a.length === b.length && [...a].sort().every((v, i) => v === [...b].sort()[i])
+
 
 export const EIG_GENS: Gen[] = [
   { lesson: 'eigenvalues', level: 1, make: (r) => {
@@ -154,5 +154,4 @@ export const EIG_GENS: Gen[] = [
     return numSpec(`A matrix with ${cols} columns has rank ${rank}. What is the dimension of its null space (the solutions of Ax = 0)?`, fr(cols - rank), 'The rank–nullity theorem: rank + nullity = the number of columns.', [`nullity = ${cols} − ${rank} = ${cols - rank}.`])
   } },
 ]
-void sameSet; void OP
 export const LA_GENS: Gen[] = [...MAT_GENS, ...EIG_GENS]
