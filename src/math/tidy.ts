@@ -10,6 +10,7 @@ export const tidyText = (t: string) => t
   .replace(/\+ -/g, '− ')
   .replace(/(?<![\d./^])1(?=[xyzr](?![a-z]))/g, '')
   .replace(/\(([a-z]) \+ 0\)/g, '$1')
-  .replace(/(?<=[a-z)²³⁴]) \+ 0(?=\s*[=).,]|\s+has|$)/g, '')
+  .replace(/(?<=[a-z)²³⁴]) \+ 0(?=\s*[=)]|\.(?!\d)|,|\s+has|$)/g, '')
   .replace(/ [+−] 0[a-z](?=\s)/g, '')
+  .replace(/(?<![\d/.])(−?\d+)\/1(?![\d/])/g, '$1')
   .replace(/(?<=\S) {2,}(?=\S)/g, ' ')

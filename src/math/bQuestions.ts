@@ -72,7 +72,7 @@ export const LIN_GENS: Gen[] = [
     return words(`Does the equation ${lhs} = ${rhs} have one solution, no solution, or infinitely many solutions?`, ws, ['one solution', 'no solution', 'infinitely many solutions'], 'Simplify both sides and collect the x terms. If the x terms cancel, check whether what is left is true or false.', [how])
   } },
   { lesson: 'solving-linear', level: 3, make: (r) => {
-    const a = pick(r, [0.5, 1.5, 2.5, 0.25, 0.2, 0.4, 1.2, 0.6]), x = ri(r, -10, 20), b = pick(r, [0.5, 1.2, 2.4, 3.5, 0.8, 1.5])
+    const a = pick(r, [0.5, 1.5, 2.5, 0.25, 0.2, 0.4, 1.2, 0.6]), x = ri(r, -10, 20), b = pick(r, [1.2, 2.4, 3.5, 1.5, 4.5, 2.5])
     const rhs = Number((a * x + b).toFixed(4))
     return decSpec(`Solve ${a}x + ${b} = ${rhs}.`, x, 'You can multiply through by 10 or 100 to clear the decimals, or work with the decimals directly.', [`Subtract ${b} from both sides: ${a}x = ${Number((rhs - b).toFixed(4))}.`, `Divide by ${a}: x = ${x}.`], 4)
   } },
