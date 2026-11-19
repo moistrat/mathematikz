@@ -2,6 +2,7 @@ import { WidgetId } from '../types'
 import { CubicRoots, ExprLab, Holes, RatGraph } from './Algebra'
 import { ConvInterval, DoubleInt, GradLab, SeriesConv, TaylorLab } from './SeriesLab'
 import { BinomLab, MatrixLab, NormalLab, Oscillator, Regression, SlopeField } from './FinalLab'
+import { AreaModel, FractionBars, NumberLine, RatioLab, SciNotation } from './BasicsLab'
 import { Converter, Radians } from './Angles'
 import { AccumLab, BetweenLab, FamilyLab, PartSteps, RevolveLab, RiemannLab, SubSteps } from './IntegralLab'
 import { BoxOpt, DerivGraph, ImplicitLab, Ladder, LimitLab, SecantLab } from './CalculusLab'
@@ -78,5 +79,10 @@ export function Widget({ id }: { id: WidgetId }) {
     case 'binomlab': return <BinomLab />
     case 'normallab': return <NormalLab />
     case 'regression': return <Regression />
+    case 'numberline': return <NumberLine />
+    case 'fractionbars': return <FractionBars />
+    case 'ratiolab': return <RatioLab />
+    case 'areamodel': return <AreaModel />
+    case 'scinotation': return <SciNotation />
   }
 }

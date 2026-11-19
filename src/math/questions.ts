@@ -11,6 +11,7 @@ import { checkCalc, CalcSpec } from './calculus'
 import { tidyText } from './tidy'
 import { CALC_GENS } from './calcQuestions'
 import { CX_GENS } from './cxQuestions'
+import { A1_GENS } from './a1Questions'
 import { ADV_GENS } from './advQuestions'
 import { FIN_GENS } from './finalQuestions'
 import { INT_GENS } from './intQuestions'
@@ -600,7 +601,7 @@ const TRIG_GENS: Gen[] = [
   } },
 ]
 
-const RAW_GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS, ...SEQ_GENS, ...CX_GENS, ...CALC_GENS, ...INT_GENS, ...ADV_GENS, ...FIN_GENS]
+const RAW_GENS: Gen[] = [...TRIG_GENS, ...ALG_GENS, ...EQ_GENS, ...POW_GENS, ...FN_GENS, ...TRIG2_GENS, ...SEQ_GENS, ...CX_GENS, ...CALC_GENS, ...INT_GENS, ...ADV_GENS, ...FIN_GENS, ...A1_GENS]
 /** every generator has the text of its questions tidied (see tidy.ts); wrapped in place so the unit arrays still hold the same objects */
 const tidied = new WeakSet<Gen>()
 for (const g of RAW_GENS) {
