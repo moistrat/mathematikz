@@ -129,6 +129,7 @@ function FreePractice() {
   const [topic, setTopic] = useState<string>(() => load('mathematikz.free.topic', 'all'))
   const [level, setLevel] = useState<number>(() => load('mathematikz.free.level', 1))
   const [score, setScore] = useState<Score>(() => load('mathematikz.free.score', EMPTY))
+  const curUnit = topic === 'all' ? 'all' : (UNITS.find((u) => unitScopeId(u.id) === topic || u.lessons.some((l) => l.id === topic))?.id ?? 'all')
   const make = (t: string, l: number) => generateQuestion(t === 'all' ? 'all' : (scopeById(t)?.lessons ?? [t]), l)
   const [q, setQ] = useState(() => make(topic, level))
   const change = (t: string, l: number) => { setTopic(t); setLevel(l); save('mathematikz.free.topic', t); save('mathematikz.free.level', l); setQ(make(t, l)) }
@@ -153,20 +154,21 @@ function FreePractice() {
           <button className="btn ghost" onClick={() => { setScore(EMPTY); save('mathematikz.free.score', EMPTY) }}>Reset</button>
         </div>
       </div>
-      <div className="topic-groups">
-        <div className="seg topic-seg" role="group" aria-label="Topic">
-          <button className={topic === 'all' ? 'on' : ''} onClick={() => change('all', level)}>Everything, mixed</button>
-        </div>
-        {UNITS.map((u, ui) => (
-          <div key={u.id} className="topic-group">
-            <p className="eyebrow">Unit {ui + 1} &middot; {u.title}</p>
-            <div className="seg topic-seg" role="group" aria-label={`Topics in unit ${ui + 1}`}>
-              {[{ id: unitScopeId(u.id), name: 'Mixed' }, ...u.lessons.map((l) => ({ id: l.id, name: l.title }))].map((t) => (
-                <button key={t.id} className={t.id === topic ? 'on' : ''} onClick={() => change(t.id, level)}>{t.name}</button>
-              ))}
-            </div>
-          </div>
-        ))}
+      <div className="topic-picker">
+        <label>Unit
+          <select value={curUnit} onChange={(e) => change(e.target.value === 'all' ? 'all' : unitScopeId(e.target.value), level)}>
+            <option value="all">Everything, mixed</option>
+            {UNITS.map((u, ui) => <option key={u.id} value={u.id}>{ui + 1}. {u.title}</option>)}
+          </select>
+        </label>
+        {curUnit !== 'all' && (
+          <label>Topic
+            <select value={topic} onChange={(e) => change(e.target.value, level)}>
+              <option value={unitScopeId(curUnit)}>Mixed: the whole unit</option>
+              {(UNITS.find((u) => u.id === curUnit)?.lessons ?? []).map((l) => <option key={l.id} value={l.id}>{l.title}</option>)}
+            </select>
+          </label>
+        )}
       </div>
       <div className="quiz-one"><Ask q={q} mode="free" onResult={onResult} onNext={() => setQ(make(topic, level))} nextLabel="Next question" /></div>
     </>
@@ -186,11 +188,11 @@ function SectionPicker() {
       {UNITS.map((u, ui) => {
         const ub = load<Best | null>(key(unitScopeId(u.id)), null)
         return (
-          <div key={u.id} className="card picker-unit">
-            <div className="picker-head">
-              <div><p className="eyebrow">Unit {ui + 1}</p><h3>{u.title}</h3></div>
-              <a className="btn primary" href={`#/practice/${unitScopeId(u.id)}`}>Whole unit{ub ? ` (best ${ub.best}/${SIZE})` : ''}</a>
-            </div>
+          <details key={u.id} className="card picker-unit">
+            <summary className="picker-head">
+              <div><p className="eyebrow">Unit {ui + 1} &middot; {u.lessons.length} topics</p><h3>{u.title}</h3></div>
+              <a className="btn primary" href={`#/practice/${unitScopeId(u.id)}`} onClick={(e) => e.stopPropagation()}>Whole unit{ub ? ` (best ${ub.best}/${SIZE})` : ''}</a>
+            </summary>
             <div className="picker-lessons">
               {u.lessons.map((l) => {
                 const b = load<Best | null>(key(l.id), null)
@@ -202,7 +204,7 @@ function SectionPicker() {
                 )
               })}
             </div>
-          </div>
+          </details>
         )
       })}
     </div>

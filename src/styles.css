@@ -392,3 +392,13 @@ p.warn { margin: .6rem 0 0; }
 .stepper-list { margin: 8px 0 4px 1.2em; padding: 0; display: grid; gap: 6px; }
 .stepper-list li { line-height: 1.45; }
 .seg button:disabled { opacity: 0.45; cursor: default; }
+
+/* compact topic pickers */
+.topic-picker { display: flex; flex-wrap: wrap; gap: .75rem 1rem; margin: .8rem 0 1rem; }
+.topic-picker label { display: grid; gap: .25rem; font-size: 12px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; min-width: 0; flex: 1 1 220px; }
+.topic-picker select { font: inherit; font-size: 14px; text-transform: none; letter-spacing: 0; color: var(--text); background: var(--surface-2); border: 1px solid var(--border-strong); border-radius: 6px; padding: .5rem .6rem; width: 100%; }
+details.picker-unit > summary { list-style: none; cursor: pointer; margin: 0; }
+details.picker-unit > summary::-webkit-details-marker { display: none; }
+details.picker-unit > summary::after { content: '▾'; color: var(--text-faint); margin-left: .6rem; }
+details.picker-unit[open] > summary { margin-bottom: .8rem; }
+details.picker-unit[open] > summary::after { content: '▴'; }
